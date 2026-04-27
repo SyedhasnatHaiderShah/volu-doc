@@ -8,18 +8,18 @@ How to set up Volu locally on day one.
 
 ## Prerequisites
 
-| Tool | Version | Why |
-|---|---|---|
-| Node.js | 20 LTS | Backend, admin |
-| pnpm | 9.x | Workspace + faster than npm |
-| Docker Desktop | latest | Postgres, Redis, Meilisearch |
-| Flutter | latest stable | Mobile |
-| Xcode | latest | iOS builds (macOS only) |
-| Android Studio | latest | Android emulator |
-| Terraform | 1.6+ | Infra |
-| AWS CLI | v2 | Deploys |
-| direnv | latest | env-var management |
-| GitHub CLI | latest | PR workflow |
+| Tool           | Version       | Why                          |
+| -------------- | ------------- | ---------------------------- |
+| Node.js        | 20 LTS        | Backend, admin               |
+| pnpm           | 9.x           | Workspace + faster than npm  |
+| Docker Desktop | latest        | Postgres, Redis, Meilisearch |
+| Flutter        | latest stable | Mobile                       |
+| Xcode          | latest        | iOS builds (macOS only)      |
+| Android Studio | latest        | Android emulator             |
+| Terraform      | 1.6+          | Infra                        |
+| AWS CLI        | v2            | Deploys                      |
+| direnv         | latest        | env-var management           |
+| GitHub CLI     | latest        | PR workflow                  |
 
 A `Brewfile` (macOS) and a `setup-linux.sh` script automate the install.
 
@@ -102,6 +102,7 @@ melos run dev:merchant:android
 ```
 
 Build flavors:
+
 - **dev** — points to `http://localhost:3000`
 - **staging** — points to `https://api-staging.volu.ae`
 - **prod** — points to `https://api.volu.ae`
@@ -154,8 +155,8 @@ services:
   mailhog:
     image: mailhog/mailhog
     ports:
-      - 1025:1025  # SMTP
-      - 8025:8025  # Web UI
+      - 1025:1025 # SMTP
+      - 8025:8025 # Web UI
 ```
 
 `docker compose up -d` starts all services. Web UI: MailHog at `http://localhost:8025` to view emails sent locally.
@@ -217,6 +218,7 @@ R2_BUCKET_PRIVATE=volu-private-dev
 ```
 
 For local dev, **most external services have mock/test mode**:
+
 - Stripe: test API keys.
 - Tabby/Tamara: sandbox keys.
 - Unifonic: dev mode prints OTPs to console (no SMS sent).
@@ -256,18 +258,23 @@ melos run format                  # apply dart format
 ## Troubleshooting
 
 ### "Database connection refused"
+
 Docker Postgres not running. Run `docker compose up -d` from `volu-backend/`.
 
 ### "Prisma migration failed"
+
 Likely DB is in a weird state. `pnpm db:reset` to wipe and re-seed.
 
 ### "Port 3000 already in use"
+
 Another service or stale Node process. `lsof -i :3000` then kill.
 
 ### "Flutter build failed: pod install"
+
 On macOS: `cd apps/user_app/ios && pod install --repo-update`. If still failing, `pod deintegrate && pod install`.
 
 ### "iOS simulator can't reach localhost:3000"
+
 Use `http://localhost:3000` from simulator (it bridges automatically). For Android emulator, use `http://10.0.2.2:3000` — that's the emulator's name for the host.
 
 ---

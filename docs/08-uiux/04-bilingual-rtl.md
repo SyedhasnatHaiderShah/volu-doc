@@ -20,6 +20,7 @@ How Volu does English + Arabic right.
 ### Source of truth
 
 `packages/volu_localization/lib/l10n/`:
+
 - `intl_en.arb`
 - `intl_ar.arb`
 
@@ -127,6 +128,7 @@ A line containing both Latin and Arabic characters (e.g., "AED 150 خصم 50%") 
 ### Numerals
 
 Default to **Latin numerals** for prices, codes, distances. Reasons:
+
 - Unambiguous to all UAE residents (Latin numerals are universal in the region).
 - Consistent across locales (price reads the same in both apps).
 - Simpler typesetting.
@@ -137,15 +139,15 @@ Eastern Arabic numerals (٠١٢٣٤٥٦٧٨٩) optionally rendered for narrative
 
 ## Common pitfalls (avoided)
 
-| Pitfall | Why bad | Fix |
-|---|---|---|
-| English-only "left/right" instructions | Confusing in RTL | Use "next/previous" |
-| Hardcoded text in image assets | Can't translate | Always render text in code |
-| Using Latin font for Arabic glyphs | Looks bad / illegible | Use Arabic-specific font |
-| Mixed-script forced to one direction | Bidi engine handles it; manual is wrong | Trust the platform |
-| Date formatted as MM/DD/YYYY | Ambiguous globally | Use `intl` to format per locale |
-| Padding using LTR-only sides | Doesn't mirror | EdgeInsetsDirectional |
-| Forms with labels not flipping | Confusing | Label sides flip with direction |
+| Pitfall                                | Why bad                                 | Fix                             |
+| -------------------------------------- | --------------------------------------- | ------------------------------- |
+| English-only "left/right" instructions | Confusing in RTL                        | Use "next/previous"             |
+| Hardcoded text in image assets         | Can't translate                         | Always render text in code      |
+| Using Latin font for Arabic glyphs     | Looks bad / illegible                   | Use Arabic-specific font        |
+| Mixed-script forced to one direction   | Bidi engine handles it; manual is wrong | Trust the platform              |
+| Date formatted as MM/DD/YYYY           | Ambiguous globally                      | Use `intl` to format per locale |
+| Padding using LTR-only sides           | Doesn't mirror                          | EdgeInsetsDirectional           |
+| Forms with labels not flipping         | Confusing                               | Label sides flip with direction |
 
 ---
 
@@ -165,6 +167,7 @@ Horizontal scroll (e.g., flash deal carousel): flows RTL in Arabic. The "next" i
 Bottom nav: order flips. The home tab stays at the trailing position relative to start. We test both layouts.
 
 Back button:
+
 - iOS Arabic: back chevron points right.
 - Android Arabic: back arrow points right.
 
@@ -185,6 +188,7 @@ Push notifications, emails, SMS sent in user's preferred locale. Test for proper
 ## Locale management
 
 User's locale stored in:
+
 - `users.locale` (server-side preference)
 - `shared_preferences` `locale_override` (client-side override)
 - iOS: `Locale.preferredLanguages.first` (system)
@@ -213,6 +217,7 @@ User can change in Settings; reflects immediately.
 ## Native Arabic reviewer
 
 Volu retains at least one Khaleeji-Arabic native speaker who reviews:
+
 - Translations before each release.
 - Tone and idiom (Arabic varies regionally; UAE Arabic isn't Egyptian Arabic).
 - Marketing copy.
@@ -221,19 +226,19 @@ Volu retains at least one Khaleeji-Arabic native speaker who reviews:
 
 ## Specific Volu phrases (locked translations)
 
-| EN | AR | Notes |
-|---|---|---|
-| Volu | فولو | Brand — same pronunciation in both languages |
-| Unbeatable. Exclusive. Now. | لا تُضاهى. حصرية. الآن. | Tagline — locked |
-| Verified Merchant | تاجر موثَّق | |
-| Today's Volu drops | عروض فولو اليوم | |
-| Add to wallet | أضف إلى المحفظة | |
-| Redeem | استبدل | |
-| Coupon | كوبون | |
-| Raffle | السحب | |
-| Refund | استرداد | |
-| Buy now | اشتر الآن | |
-| Confirm | تأكيد | |
+| EN                          | AR                      | Notes                                        |
+| --------------------------- | ----------------------- | -------------------------------------------- |
+| Volu                        | فولو                    | Brand — same pronunciation in both languages |
+| Unbeatable. Exclusive. Now. | لا تُضاهى. حصرية. الآن. | Tagline — locked                             |
+| Verified Merchant           | تاجر موثَّق             |                                              |
+| Today's Volu drops          | عروض فولو اليوم         |                                              |
+| Add to wallet               | أضف إلى المحفظة         |                                              |
+| Redeem                      | استبدل                  |                                              |
+| Coupon                      | كوبون                   |                                              |
+| Raffle                      | السحب                   |                                              |
+| Refund                      | استرداد                 |                                              |
+| Buy now                     | اشتر الآن               |                                              |
+| Confirm                     | تأكيد                   |                                              |
 
 Maintained in `/packages/volu_localization/lib/l10n/locked_phrases.md`.
 

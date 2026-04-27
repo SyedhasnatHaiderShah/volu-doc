@@ -21,6 +21,7 @@ Branches:
 - `release/<version>` — mobile release branches.
 
 Examples:
+
 - `feat/coupons-multi-use-redemption`
 - `fix/payouts-stripe-retry`
 - `chore/deps-bump-nestjs-10.4`
@@ -38,6 +39,7 @@ Examples:
 ```
 
 Types:
+
 - `feat` — new feature
 - `fix` — bug fix
 - `chore` — maintenance
@@ -50,12 +52,14 @@ Types:
 - `ci` — CI changes
 
 Subject:
+
 - ≤ 72 characters
 - Imperative mood ("add", not "added")
 - No period at end
 
 Body (optional):
-- Explains *why*, not *what*.
+
+- Explains _why_, not _what_.
 - Refs ticket: `Closes VOLU-1234`.
 - Note breaking changes prominently.
 
@@ -102,21 +106,26 @@ Same Conventional Commits format. Squash-merge uses PR title as commit, so keep 
 
 ```markdown
 ## What this PR does
+
 <one-paragraph summary>
 
 ## Why
+
 <problem being solved; link to ticket / RFC>
 
 ## How
+
 <key technical decisions; alternatives considered>
 
 ## Testing
+
 - [ ] Added unit tests
 - [ ] Added integration tests
 - [ ] Manually tested against staging
 - [ ] Updated docs
 
 ## Related
+
 - Closes VOLU-XXX
 - Refs ADR-NNNN
 ```
@@ -193,6 +202,7 @@ In order of importance:
 ### Migration PRs
 
 Schema migration PRs:
+
 - Auto-tag schema reviewer.
 - Must specify if expand or contract step (see [Migrations Strategy](../04-data-model/03-migrations-strategy.md)).
 - Backfills documented separately.
@@ -201,6 +211,7 @@ Schema migration PRs:
 ### Security PRs
 
 Security-related (auth, secrets, encryption):
+
 - 2 approvals; one must be Security Lead.
 - Threat-model implications noted.
 
@@ -255,6 +266,7 @@ GitHub auto-assigns reviewers based on touched paths.
 ## Branch protection (production)
 
 `main`:
+
 - Direct push: disallowed.
 - Force push: disallowed.
 - Require PR review: yes.
@@ -289,12 +301,14 @@ Tools like Graphite help, but vanilla git is fine.
 ## Local hooks (Husky + lint-staged)
 
 Pre-commit:
+
 - Run formatter on staged files.
 - Run linter on staged files.
 - Block commit on lint errors.
 - Run quick unit tests on changed files.
 
 Pre-push:
+
 - Run typecheck.
 - Run full unit test suite (~30s).
 

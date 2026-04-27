@@ -29,8 +29,8 @@ The standards every Volu engineer follows. Less about taste, more about consiste
     "noImplicitOverride": true,
     "noFallthroughCasesInSwitch": true,
     "exactOptionalPropertyTypes": true,
-    "skipLibCheck": false
-  }
+    "skipLibCheck": false,
+  },
 }
 ```
 
@@ -58,8 +58,8 @@ The standards every Volu engineer follows. Less about taste, more about consiste
 - **Branded types** for IDs to prevent mix-ups:
 
   ```ts
-  type UserId = string & { __brand: 'UserId' };
-  type MerchantId = string & { __brand: 'MerchantId' };
+  type UserId = string & { __brand: "UserId" };
+  type MerchantId = string & { __brand: "MerchantId" };
   ```
 
 ### Async
@@ -151,13 +151,13 @@ The standards every Volu engineer follows. Less about taste, more about consiste
 
 ## Naming conventions across the stack
 
-| Concept | Backend (TS) | Mobile (Dart) | DB |
-|---|---|---|---|
-| User ID | `userId: UserId` | `userId: UserId` | `user_id UUID` |
-| Boolean flag | `isVerified` | `isVerified` | `is_verified` |
-| Timestamps | `createdAt: Date` | `createdAt: DateTime` | `created_at TIMESTAMPTZ` |
-| Money | `amountFils: number` | `amountFils: int` | `amount_fils INTEGER` |
-| Enums | `OrderStatus.Paid` | `OrderStatus.paid` | `order_status` enum value `'paid'` |
+| Concept      | Backend (TS)         | Mobile (Dart)         | DB                                 |
+| ------------ | -------------------- | --------------------- | ---------------------------------- |
+| User ID      | `userId: UserId`     | `userId: UserId`      | `user_id UUID`                     |
+| Boolean flag | `isVerified`         | `isVerified`          | `is_verified`                      |
+| Timestamps   | `createdAt: Date`    | `createdAt: DateTime` | `created_at TIMESTAMPTZ`           |
+| Money        | `amountFils: number` | `amountFils: int`     | `amount_fils INTEGER`              |
+| Enums        | `OrderStatus.Paid`   | `OrderStatus.paid`    | `order_status` enum value `'paid'` |
 
 Prisma `@@map` and `@map` bridge the snake_case ↔ camelCase divide.
 
@@ -177,11 +177,11 @@ Custom error classes per module:
 
 ```ts
 export class CouponExpiredError extends DomainError {
-  readonly code = 'COUPON_EXPIRED';
+  readonly code = "COUPON_EXPIRED";
   readonly httpStatus = 410;
 
   constructor(public readonly expiresAt: Date) {
-    super('This coupon has expired.');
+    super("This coupon has expired.");
   }
 }
 ```
@@ -207,7 +207,7 @@ Specific error UI per error type (network, auth, not-found, generic).
 ### Backend (Pino)
 
 ```ts
-this.logger.info({ couponId, userId, branchId }, 'coupon.redeemed');
+this.logger.info({ couponId, userId, branchId }, "coupon.redeemed");
 ```
 
 Always structured. Always include relevant IDs. Never log PII (Pino redaction enforces).
@@ -234,7 +234,7 @@ Logging only in debug. Sentry breadcrumbs for production diagnostics. Crashes au
   ```
 
 - Internal helpers don't need docs; clear names suffice.
-- Complex logic gets a brief explanation of *why* this approach (with link to ticket / ADR if relevant).
+- Complex logic gets a brief explanation of _why_ this approach (with link to ticket / ADR if relevant).
 
 ---
 

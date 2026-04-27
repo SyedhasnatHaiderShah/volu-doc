@@ -39,6 +39,7 @@ volu-mobile/
 ```
 
 Melos commands:
+
 - `melos bootstrap` — link all packages
 - `melos run analyze` — flutter analyze across all packages
 - `melos run test` — flutter test across all packages
@@ -96,6 +97,7 @@ lib/
 Three notifier patterns:
 
 ### 1. `Provider` — for simple read-only values
+
 ```dart
 final apiClientProvider = Provider<VoluApiClient>((ref) {
   return VoluApiClient(baseUrl: ref.read(envProvider).apiBaseUrl);
@@ -103,6 +105,7 @@ final apiClientProvider = Provider<VoluApiClient>((ref) {
 ```
 
 ### 2. `AsyncNotifier` — for async-loaded state
+
 ```dart
 @riverpod
 class HomeFeed extends _$HomeFeed {
@@ -121,6 +124,7 @@ class HomeFeed extends _$HomeFeed {
 ```
 
 ### 3. `Notifier` — for client-only state machines (e.g., cart)
+
 ```dart
 @riverpod
 class Cart extends _$Cart {
@@ -134,6 +138,7 @@ class Cart extends _$Cart {
 ```
 
 ### Rules
+
 - **State is always immutable** (use `freezed`).
 - **Side effects in state notifiers, not widgets.**
 - **Widgets are dumb**: they read state and dispatch events. No business logic in widgets.
@@ -205,17 +210,17 @@ Manual hand-written code over a generated client is forbidden. Custom logic goes
 
 ## Local storage strategy
 
-| Data | Storage | Reason |
-|---|---|---|
-| Access token (short-lived JWT) | In-memory only | No persistence needed; refresh from refresh-token on cold start |
-| Refresh token | `flutter_secure_storage` (OS keychain) | Encrypted at rest by OS |
-| User profile basics (for offline display) | Hive | Fast read |
-| Cart state | Hive | Persists across app restarts |
-| Cached deals (offline browse) | Hive (with TTL) | Browsing works in low-connectivity |
-| Search history | `shared_preferences` | Non-sensitive |
-| Settings (lang, notifications) | `shared_preferences` | Non-sensitive |
-| Coupon redemption queue (merchant app) | Hive (encrypted) | Critical reliability |
-| App PIN (separate from coupon PIN) | `flutter_secure_storage` | Sensitive |
+| Data                                      | Storage                                | Reason                                                          |
+| ----------------------------------------- | -------------------------------------- | --------------------------------------------------------------- |
+| Access token (short-lived JWT)            | In-memory only                         | No persistence needed; refresh from refresh-token on cold start |
+| Refresh token                             | `flutter_secure_storage` (OS keychain) | Encrypted at rest by OS                                         |
+| User profile basics (for offline display) | Hive                                   | Fast read                                                       |
+| Cart state                                | Hive                                   | Persists across app restarts                                    |
+| Cached deals (offline browse)             | Hive (with TTL)                        | Browsing works in low-connectivity                              |
+| Search history                            | `shared_preferences`                   | Non-sensitive                                                   |
+| Settings (lang, notifications)            | `shared_preferences`                   | Non-sensitive                                                   |
+| Coupon redemption queue (merchant app)    | Hive (encrypted)                       | Critical reliability                                            |
+| App PIN (separate from coupon PIN)        | `flutter_secure_storage`               | Sensitive                                                       |
 
 **Never** stored locally: full payment cards, Emirates ID details, full addresses (these stay server-side).
 
@@ -264,12 +269,14 @@ Manual hand-written code over a generated client is forbidden. Custom logic goes
 ## Offline support strategy
 
 ### User app
+
 - **Browse offline**: home feed cached for 30 minutes; deal detail cached for 5 minutes; user can browse without network until cache expires.
 - **Wallet offline**: all active coupons cached locally with QR + PIN; user can show coupon to merchant even if user is offline (merchant app validates).
 - **Cart offline**: cart state in Hive; survives app restart.
 - **Purchase offline**: blocked. Show "Check connection" banner.
 
 ### Merchant app
+
 - **Scanner offline**: critical capability. Up to 4 hours offline.
 - Local cryptographic validation of QR signature using public key shipped in app.
 - Local cache of redeemed coupons today (so we can detect double-spend on the same device).
@@ -281,6 +288,7 @@ Manual hand-written code over a generated client is forbidden. Custom logic goes
 ## Bilingual & RTL
 
 ### Translation
+
 All user-facing strings live in `packages/volu_localization/`:
 
 ```yaml
@@ -298,6 +306,7 @@ Text(context.t.home_title)
 ```
 
 ### Locale switching
+
 Locale set in `app.dart`:
 
 ```dart
@@ -312,12 +321,15 @@ MaterialApp.router(
 User toggles in settings; persisted to shared_preferences.
 
 ### RTL
+
 Flutter handles RTL automatically when `Directionality` is correct. We:
+
 - Use `Directionality.of(context)` to read direction.
 - Use `Padding(padding: EdgeInsetsDirectional.only(start: 16, end: 8))` instead of `left/right`.
 - Mirror icons that have direction (chevron, back arrow): handled by `Transform` + RTL check, or use direction-aware icons.
 
 ### Date / number / currency formatting
+
 - `intl` package for localised formats.
 - Currency: AED with proper symbol and grouping.
 - Dates: Gregorian primary; Hijri shown in AR mode where culturally relevant.
@@ -327,6 +339,7 @@ Flutter handles RTL automatically when `Directionality` is correct. We:
 ## Theme & design system
 
 ### Tokens
+
 Defined in `packages/volu_design_system/`:
 
 ```dart
@@ -359,6 +372,7 @@ class VoluTypography {
 ```
 
 ### Components
+
 Reusable components in `packages/volu_design_system/lib/components/`:
 
 - `VoluButton` (primary, secondary, ghost, destructive)
@@ -376,6 +390,7 @@ Reusable components in `packages/volu_design_system/lib/components/`:
 - `VoluAlertDialog`
 
 Every component:
+
 - Has a Storybook-style preview in `packages/volu_design_system/example/`.
 - Has unit tests (golden tests for visual regression).
 - Supports both light and dark themes.
@@ -403,31 +418,37 @@ This is the merchant app's most-used and most-critical screen. Specific design r
 ## Performance optimisations
 
 ### Cold start
+
 - Defer non-critical initialisation (analytics, marketing SDKs) to after first frame.
 - Pre-cache only what's needed for the home screen.
 - Use `RawImage` + cached decode for known assets.
 
 ### Scrolling
+
 - `ListView.builder` for any list > 10 items.
 - `cacheExtent` tuned to reduce visible jank.
 - Hero images use progressive loading with blurhash placeholders.
 - Pagination via `infinite_scroll_pagination` package.
 
 ### Image loading
+
 - `cached_network_image` with disk cache.
 - Cloudflare Images delivers WebP/AVIF based on Accept header.
 - Multiple sizes per image; correct size requested per layout context.
 
 ### Build modes
+
 - **Debug**: full debug overlay, hot reload, no obfuscation.
 - **Profile**: production-like with profiler attached; for performance testing.
 - **Release**: tree-shaken, obfuscated, R8 (Android), bitcode disabled (iOS post-Xcode 14).
 
 ### Bundle size targets
+
 - User app: ≤ 35 MB on iOS (App Store IPA), ≤ 25 MB Android (AAB base).
 - Merchant app: similar.
 
 ### Frame budget
+
 - All screens must render at 60 fps minimum on iPhone 12 / Galaxy S21.
 - No animation that drops below 30 fps.
 - Profile every release; regressions are bugs.
@@ -437,13 +458,17 @@ This is the merchant app's most-used and most-critical screen. Specific design r
 ## Testing
 
 ### Unit tests
+
 For pure logic in `application/` and `domain/`:
+
 ```dart
 test('coupon expires when valid_until is in the past', () { ... });
 ```
 
 ### Widget tests
+
 For individual widgets and screens:
+
 ```dart
 testWidgets('home screen shows flash deals carousel', (tester) async {
   await tester.pumpWidget(...);
@@ -452,7 +477,9 @@ testWidgets('home screen shows flash deals carousel', (tester) async {
 ```
 
 ### Golden tests
+
 For design-system components and key screens (visual regression):
+
 ```dart
 testGoldens('VoluCouponCard light + AR', (tester) async {
   await tester.pumpWidgetBuilder(...);
@@ -461,7 +488,9 @@ testGoldens('VoluCouponCard light + AR', (tester) async {
 ```
 
 ### Integration tests
+
 Real backend (test environment) + real Flutter app:
+
 ```dart
 testWidgets('full purchase flow', (tester) async {
   await loginAs(tester, testUser);
@@ -471,9 +500,11 @@ testWidgets('full purchase flow', (tester) async {
 ```
 
 ### E2E
+
 Patrol or Maestro for full device-level flows on CI (iOS sim + Android emulator).
 
 ### Coverage targets
+
 - Domain logic: 90%+
 - Application layer: 80%+
 - Widgets: 60%+ (golden tests count)
@@ -483,20 +514,24 @@ Patrol or Maestro for full device-level flows on CI (iOS sim + Android emulator)
 ## Build & release
 
 ### Android
+
 - Build: `flutter build appbundle --release --flavor prod`
 - Sign: Play App Signing (Google manages key)
 - Distribute: Internal testing → Closed beta → Production
 
 ### iOS
+
 - Build: `flutter build ipa --release --flavor prod`
 - Sign: App Store Connect with team certificate
 - Distribute: TestFlight Internal → TestFlight External → App Store
 
 ### Versioning
+
 - `pubspec.yaml`: `version: <semver>+<build>` e.g., `1.4.2+47`
 - Build number monotonically increasing per platform (set by CI from `GITHUB_RUN_NUMBER`).
 
 ### Release cadence
+
 - Production release every 2 weeks (staying within app store review windows).
 - Hotfixes via Shorebird OTA only when truly urgent.
 
@@ -505,7 +540,9 @@ Patrol or Maestro for full device-level flows on CI (iOS sim + Android emulator)
 ## Crash reporting & analytics
 
 ### Sentry
+
 Initialised in `main.dart`:
+
 ```dart
 await SentryFlutter.init(
   (options) {
@@ -519,6 +556,7 @@ await SentryFlutter.init(
 ```
 
 ### Analytics events
+
 Event names follow `<noun>_<verb>` pattern: `deal_viewed`, `coupon_purchased`, `coupon_redeemed`, `raffle_entered`.
 
 Properties always include: `app_version`, `build_number`, `locale`, `platform`, `is_authenticated`.

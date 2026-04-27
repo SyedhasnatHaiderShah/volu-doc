@@ -25,6 +25,7 @@ VPC: volu-prod-vpc (10.0.0.0/16)
 ```
 
 **Internet access:**
+
 - Public subnets: direct internet via Internet Gateway (only ALB + NAT GW live here).
 - Private app subnets: outbound only via NAT Gateway (per AZ for HA).
 - Private data subnets: no internet access; egress only via PrivateLink to specific AWS services.
@@ -34,10 +35,12 @@ VPC: volu-prod-vpc (10.0.0.0/16)
 ## Security groups (defence in depth)
 
 ### `sg-alb`
+
 - **Inbound:** 443 from `0.0.0.0/0` (Cloudflare-only via WAF rules at app layer).
 - **Outbound:** all to `sg-app-tasks` on app ports.
 
 ### `sg-app-tasks` (ECS tasks)
+
 - **Inbound:** from `sg-alb` only on app port (e.g., 3000).
 - **Outbound:**
   - to `sg-rds` on 5432
@@ -46,18 +49,22 @@ VPC: volu-prod-vpc (10.0.0.0/16)
   - to `0.0.0.0/0` on 443 (for external API calls — Stripe, Tabby, Tamara, Unifonic, FCM, etc.)
 
 ### `sg-rds`
+
 - **Inbound:** from `sg-app-tasks` on 5432. From `sg-bastion` (JIT) on 5432 when bastion enabled.
 - **Outbound:** none.
 
 ### `sg-redis`
+
 - **Inbound:** from `sg-app-tasks` on 6379.
 - **Outbound:** none.
 
 ### `sg-meilisearch`
+
 - **Inbound:** from `sg-app-tasks` on 7700.
 - **Outbound:** to S3 endpoint for snapshots.
 
 ### `sg-bastion` (rarely used; JIT only)
+
 - **Inbound:** from approved SSO via session manager only (no direct SSH).
 - **Outbound:** to `sg-rds`, `sg-redis` for emergency access.
 
@@ -66,6 +73,7 @@ VPC: volu-prod-vpc (10.0.0.0/16)
 ## Network ACLs
 
 Default-deny stance:
+
 - **Public subnet NACL:** allow inbound 443, 80 (redirect), ephemeral. Allow outbound 443, 80.
 - **Private app NACL:** allow inbound from VPC CIDR only. Allow outbound 443, 5432, 6379, 7700.
 - **Private data NACL:** allow inbound 5432, 6379, 7700 from app subnets. Allow outbound only to S3 endpoint (for backups).
@@ -79,6 +87,7 @@ NACLs are stateless — be mindful of return traffic on ephemeral ports.
 One per AZ for HA. Cost-trade-off — consider NAT Instances for staging.
 
 Outbound traffic from private app subnets routes:
+
 - To AWS service endpoints → via PrivateLink (no NAT).
 - To external internet (Stripe, Tabby, etc.) → via NAT GW.
 
@@ -134,19 +143,19 @@ Mobile apps pin the Cloudflare-issued public cert (or the issuing intermediate) 
 
 What's allowed to leave the VPC:
 
-| Destination | Purpose | Allowed |
-|---|---|---|
-| Stripe API | Payments | ✅ |
-| Tabby/Tamara API | BNPL | ✅ |
-| Unifonic/Twilio API | SMS | ✅ |
-| WhatsApp/Meta API | Messaging + ads | ✅ |
-| TikTok API | Ads | ✅ |
-| FCM/APNs | Push | ✅ |
-| Sentry | Error reporting | ✅ |
-| Cloudflare R2 | Object storage | ✅ |
-| AWS services (KMS, Secrets, S3, ECR) | Internal | ✅ via PrivateLink |
-| Public package mirrors (npmjs, pub.dev) | Build only | ✅ in CI subnet |
-| Anything else | — | ❌ blocked at NAT/firewall |
+| Destination                             | Purpose         | Allowed                    |
+| --------------------------------------- | --------------- | -------------------------- |
+| Stripe API                              | Payments        | ✅                         |
+| Tabby/Tamara API                        | BNPL            | ✅                         |
+| Unifonic/Twilio API                     | SMS             | ✅                         |
+| WhatsApp/Meta API                       | Messaging + ads | ✅                         |
+| TikTok API                              | Ads             | ✅                         |
+| FCM/APNs                                | Push            | ✅                         |
+| Sentry                                  | Error reporting | ✅                         |
+| Cloudflare R2                           | Object storage  | ✅                         |
+| AWS services (KMS, Secrets, S3, ECR)    | Internal        | ✅ via PrivateLink         |
+| Public package mirrors (npmjs, pub.dev) | Build only      | ✅ in CI subnet            |
+| Anything else                           | —               | ❌ blocked at NAT/firewall |
 
 This explicit allowlist sits behind a future egress-firewall (AWS Network Firewall when traffic justifies the cost).
 

@@ -50,6 +50,7 @@ The five flows that make or break Volu. Each is documented step-by-step with cri
 ```
 
 **Rules:**
+
 - Every screen has a "Skip" or "Back" affordance except OTP.
 - Permission requests pre-prompted with context — not the bare OS dialog.
 - New user → first deal in 7 taps maximum.
@@ -112,6 +113,7 @@ The five flows that make or break Volu. Each is documented step-by-step with cri
 ```
 
 **Rules:**
+
 - All-in price (with VAT) is shown before the "Pay" button.
 - 3DS is the only place users are sent off-screen.
 - Confirmation screen is the destination — not a redirect to home.
@@ -151,6 +153,7 @@ The five flows that make or break Volu. Each is documented step-by-step with cri
 ```
 
 **Rules:**
+
 - Single-handed operation. All controls reachable with right thumb.
 - Haptic + audio + visual on every state.
 - Errors are bigger and more obvious than success states (cashiers need to NOT make a mistake here).
@@ -215,6 +218,7 @@ The five flows that make or break Volu. Each is documented step-by-step with cri
 ```
 
 **Rules:**
+
 - Progress indicator across all KYC + first-deal steps (e.g., "3 of 9").
 - Save-and-resume at every step.
 - KYC OCR shows confidence; merchant confirms or corrects.
@@ -251,6 +255,7 @@ The five flows that make or break Volu. Each is documented step-by-step with cri
 ```
 
 **Rules:**
+
 - Self-service refund is one of three taps from any active coupon.
 - Beyond 24h or after redemption, "Contact support" CTA opens live chat.
 

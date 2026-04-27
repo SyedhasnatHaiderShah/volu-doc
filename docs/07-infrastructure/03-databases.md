@@ -50,6 +50,7 @@ App connects to PgBouncer; PgBouncer multiplexes to RDS. This lets us scale app 
 App reads (analytics, admin lists, dashboard queries) routed to read replicas. App writes always to primary.
 
 Pattern:
+
 ```ts
 // In repositories:
 this.prismaPrimary.user.findMany(...)   // write path
@@ -75,6 +76,7 @@ Replica lag monitored; if > 30s, alerts trigger and reads fail over to primary t
 ### Monitoring
 
 CloudWatch + Grafana:
+
 - CPU utilisation
 - DB connections
 - Read/write IOPS, throughput
@@ -95,15 +97,15 @@ CloudWatch + Grafana:
 
 High-growth tables partitioned by date when row count reaches ~10M:
 
-| Table | Strategy | Trigger |
-|---|---|---|
-| `notifications` | Range, weekly | From day 1 |
-| `audit_logs` | Range, monthly | From day 1 |
-| `outbox_events` | Range, daily (purged 30d) | From day 1 |
-| `orders` | Range, quarterly | After 6 months |
-| `coupons` | Range, quarterly | After 6 months |
-| `redemptions` | Range, quarterly | After 6 months |
-| `merchant_ledger` | Range, quarterly | After 6 months |
+| Table             | Strategy                  | Trigger        |
+| ----------------- | ------------------------- | -------------- |
+| `notifications`   | Range, weekly             | From day 1     |
+| `audit_logs`      | Range, monthly            | From day 1     |
+| `outbox_events`   | Range, daily (purged 30d) | From day 1     |
+| `orders`          | Range, quarterly          | After 6 months |
+| `coupons`         | Range, quarterly          | After 6 months |
+| `redemptions`     | Range, quarterly          | After 6 months |
+| `merchant_ledger` | Range, quarterly          | After 6 months |
 
 Partition creation automated by a scheduled job (3 months ahead).
 
@@ -123,17 +125,17 @@ Partition creation automated by a scheduled job (3 months ahead).
 
 ### Use cases & key patterns
 
-| Pattern | Key prefix | TTL | Use |
-|---|---|---|---|
-| Cache | `cache:deal:{id}` | 5 min | Hot deal reads |
-| Cache | `cache:merchant:{id}` | 10 min | Merchant profiles |
-| Session | `session:revoked:{jti}` | 15 min | Revoked JWT IDs (until natural expiry) |
-| Rate limit | `rl:{endpoint}:{key}:{window}` | window length | Sliding-window rate limit counters |
-| Idempotency | `idem:{key}` | 24 h | Cached idempotent responses |
-| Feature flags | `ff:flags` (single hash) | 60s | Cached flag state |
-| Locks | `lock:{resource}:{id}` | 30s default | Short distributed locks (Redlock or single-node SET NX) |
-| Queue (BullMQ) | `bull:{queueName}:*` | n/a | Job queues |
-| Pub/Sub | channel names | n/a | Real-time signals |
+| Pattern        | Key prefix                     | TTL           | Use                                                     |
+| -------------- | ------------------------------ | ------------- | ------------------------------------------------------- |
+| Cache          | `cache:deal:{id}`              | 5 min         | Hot deal reads                                          |
+| Cache          | `cache:merchant:{id}`          | 10 min        | Merchant profiles                                       |
+| Session        | `session:revoked:{jti}`        | 15 min        | Revoked JWT IDs (until natural expiry)                  |
+| Rate limit     | `rl:{endpoint}:{key}:{window}` | window length | Sliding-window rate limit counters                      |
+| Idempotency    | `idem:{key}`                   | 24 h          | Cached idempotent responses                             |
+| Feature flags  | `ff:flags` (single hash)       | 60s           | Cached flag state                                       |
+| Locks          | `lock:{resource}:{id}`         | 30s default   | Short distributed locks (Redlock or single-node SET NX) |
+| Queue (BullMQ) | `bull:{queueName}:*`           | n/a           | Job queues                                              |
+| Pub/Sub        | channel names                  | n/a           | Real-time signals                                       |
 
 ### Memory pressure
 
@@ -162,12 +164,13 @@ If we hit memory pressure: scale instance up; consider sharding when single shar
 
 ### Index strategy
 
-| Index | Documents | Size estimate |
-|---|---|---|
-| `deals` | All approved & live + recent expired | ~10K docs |
-| `merchants` | All approved | ~600 docs |
+| Index       | Documents                            | Size estimate |
+| ----------- | ------------------------------------ | ------------- |
+| `deals`     | All approved & live + recent expired | ~10K docs     |
+| `merchants` | All approved                         | ~600 docs     |
 
 Per-deal document includes:
+
 - id, title (en+ar), description (en+ar), category, tags
 - merchant name (en+ar), brand
 - city, branches list
@@ -208,38 +211,43 @@ Nightly snapshot to `volu-backups/meilisearch/` S3 prefix; weekly cross-region r
 
 ## Capacity planning
 
-| Resource | Current | Trigger to scale |
-|---|---|---|
-| RDS storage | 200 GB | 70% used → bump auto-scale |
-| RDS CPU | 2 vCPU | sustained > 70% → upgrade instance |
-| RDS replicas | 2 | replica CPU sustained > 70% → add 3rd |
-| Redis memory | 13 GB | 70% used → upgrade instance |
-| Meilisearch disk | 50 GB | 70% used → grow volume |
+| Resource         | Current | Trigger to scale                      |
+| ---------------- | ------- | ------------------------------------- |
+| RDS storage      | 200 GB  | 70% used → bump auto-scale            |
+| RDS CPU          | 2 vCPU  | sustained > 70% → upgrade instance    |
+| RDS replicas     | 2       | replica CPU sustained > 70% → add 3rd |
+| Redis memory     | 13 GB   | 70% used → upgrade instance           |
+| Meilisearch disk | 50 GB   | 70% used → grow volume                |
 
 ---
 
 ## Common operations
 
 ### Add a column (zero-downtime)
+
 1. Migration: `ALTER TABLE ... ADD COLUMN ... NULL;`
 2. App deployed reading new column (with null-handling).
 3. (Optional) backfill data via worker job.
 4. (Optional, later) `ALTER COLUMN ... SET NOT NULL;` after backfill completes.
 
 ### Add an index on a hot table
+
 - Always `CREATE INDEX CONCURRENTLY`.
 - Monitor `pg_stat_progress_create_index`.
 
 ### Restart a replica
+
 - AWS console: reboot read replica without forcing failover.
 - App reroutes reads to remaining replicas + primary fallback.
 
 ### Failover primary
+
 - AWS console: "Reboot with failover" or trigger via API.
 - ALB sees new primary via DNS update; PgBouncer reconnects.
 - Total downtime: typically < 60s.
 
 ### Restore to a sandbox
+
 1. RDS console: snapshot → restore to new instance.
 2. Apply security groups + parameter group.
 3. Connect from sandbox app using temporary credentials.

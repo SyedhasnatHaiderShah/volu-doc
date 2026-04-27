@@ -50,6 +50,7 @@ On every PR:
 All must pass before merge.
 
 If the PR touches `prisma/schema.prisma`:
+
 - Migration is generated and committed to PR.
 - CI runs the migration against an ephemeral DB.
 - Schema reviewer is auto-tagged.
@@ -138,12 +139,14 @@ Cadence: every 2 weeks.
 For critical bugs that can't wait for a normal release:
 
 **Option A — App Store expedited release**
+
 - Branch off the released tag.
 - Apply minimal fix.
 - Submit with "expedited review" justification.
 - Apple typically approves within 24 hours.
 
 **Option B — Shorebird OTA**
+
 - Push a patch via Shorebird that ships at next app launch.
 - Limited: cannot change native code; only Dart code.
 - Reserved for true emergencies (security, data loss); each use logged.
@@ -176,14 +179,14 @@ Every PR gets a preview environment for the admin web (Vercel). Backend preview 
 
 ## Quality gates summary
 
-| Gate | When | Threshold |
-|---|---|---|
-| Lint pass | PR | 100% |
-| Tests pass | PR + main | 100% |
-| Coverage ≥ threshold | PR | Backend: 80% statements; Mobile: 70% |
-| SAST high findings | PR | 0 |
-| Critical CVE in deps | PR | 0 (high CVE: 7-day SLA) |
-| Manual approval (prod deploy) | Release | 1 person, not the author |
+| Gate                          | When      | Threshold                            |
+| ----------------------------- | --------- | ------------------------------------ |
+| Lint pass                     | PR        | 100%                                 |
+| Tests pass                    | PR + main | 100%                                 |
+| Coverage ≥ threshold          | PR        | Backend: 80% statements; Mobile: 70% |
+| SAST high findings            | PR        | 0                                    |
+| Critical CVE in deps          | PR        | 0 (high CVE: 7-day SLA)              |
+| Manual approval (prod deploy) | Release   | 1 person, not the author             |
 
 ---
 

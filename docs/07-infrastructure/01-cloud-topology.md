@@ -65,18 +65,19 @@ Volu data stays inside the Middle East region for PDPL data residency.
 
 ### Service catalogue
 
-| Service | Purpose | Min instances | Max instances |
-|---|---|---|---|
-| `volu-api-gateway` | Public-facing API for mobile + admin | 2 (one per AZ) | 20 |
-| `volu-core` | The modular monolith | 3 (one per AZ) | 30 |
-| `volu-admin-backend` | Admin endpoints | 2 | 6 |
-| `volu-workers-default` | Misc background jobs | 2 | 10 |
-| `volu-workers-notifications` | Notification delivery | 2 | 20 |
-| `volu-workers-search` | Meilisearch index updates | 2 | 6 |
-| `volu-workers-outbox` | Outbox publisher | 2 | 4 |
-| `volu-meilisearch` | Search engine | 2 (across AZs) | 2 |
+| Service                      | Purpose                              | Min instances  | Max instances |
+| ---------------------------- | ------------------------------------ | -------------- | ------------- |
+| `volu-api-gateway`           | Public-facing API for mobile + admin | 2 (one per AZ) | 20            |
+| `volu-core`                  | The modular monolith                 | 3 (one per AZ) | 30            |
+| `volu-admin-backend`         | Admin endpoints                      | 2              | 6             |
+| `volu-workers-default`       | Misc background jobs                 | 2              | 10            |
+| `volu-workers-notifications` | Notification delivery                | 2              | 20            |
+| `volu-workers-search`        | Meilisearch index updates            | 2              | 6             |
+| `volu-workers-outbox`        | Outbox publisher                     | 2              | 4             |
+| `volu-meilisearch`           | Search engine                        | 2 (across AZs) | 2             |
 
 **Task sizing baseline:**
+
 - `api-gateway`: 0.5 vCPU, 1 GB RAM
 - `core`: 1 vCPU, 2 GB RAM
 - `workers`: 0.5–1 vCPU, 1–2 GB RAM (per worker type)
@@ -135,17 +136,18 @@ Volu data stays inside the Middle East region for PDPL data residency.
 
 Volu uses **Cloudflare R2** as the primary object store (S3-compatible API; zero egress fees).
 
-| Bucket | Purpose | Access | Lifecycle |
-|---|---|---|---|
-| `volu-public-images` | Deal photos, merchant logos | Public via Cloudflare CDN; uploaded via signed URL | None (manually pruned) |
-| `volu-kyc-documents` | KYC docs (trade licence, Emirates ID) | Private; signed URL TTL 5 min | Retain 7 years post-merchant offboarding |
-| `volu-invoices` | Generated invoice + statement PDFs | Private; signed URL TTL 1 hour | Retain 7 years |
-| `volu-wallet-passes` | Apple/Google Wallet pass files | Private; signed URL TTL 1 hour | 90 days |
-| `volu-backups` | DB snapshots, Meilisearch snapshots | Private; admin-only | 12 months hot, then Glacier |
-| `volu-data-exports` | User data exports | Private; signed URL TTL 72 hours | 30 days |
-| `volu-logs-archive` | Cold-stored logs | Private; admin-only | 12 months |
+| Bucket               | Purpose                               | Access                                             | Lifecycle                                |
+| -------------------- | ------------------------------------- | -------------------------------------------------- | ---------------------------------------- |
+| `volu-public-images` | Deal photos, merchant logos           | Public via Cloudflare CDN; uploaded via signed URL | None (manually pruned)                   |
+| `volu-kyc-documents` | KYC docs (trade licence, Emirates ID) | Private; signed URL TTL 5 min                      | Retain 7 years post-merchant offboarding |
+| `volu-invoices`      | Generated invoice + statement PDFs    | Private; signed URL TTL 1 hour                     | Retain 7 years                           |
+| `volu-wallet-passes` | Apple/Google Wallet pass files        | Private; signed URL TTL 1 hour                     | 90 days                                  |
+| `volu-backups`       | DB snapshots, Meilisearch snapshots   | Private; admin-only                                | 12 months hot, then Glacier              |
+| `volu-data-exports`  | User data exports                     | Private; signed URL TTL 72 hours                   | 30 days                                  |
+| `volu-logs-archive`  | Cold-stored logs                      | Private; admin-only                                | 12 months                                |
 
 All buckets:
+
 - Encrypted at rest.
 - Versioning enabled for non-ephemeral buckets.
 - Access logged.
@@ -193,12 +195,12 @@ Detailed in [05-observability.md](./05-observability.md).
 
 ## Environments
 
-| Environment | Region | Purpose |
-|---|---|---|
-| **Production** | me-central-1 | Live customer traffic |
-| **Staging** | me-central-1 | Pre-production validation, integration tests |
-| **Development** | n/a (local Docker) | Engineer machines |
-| **Preview** | me-central-1 | Per-PR ephemeral environments |
+| Environment     | Region             | Purpose                                      |
+| --------------- | ------------------ | -------------------------------------------- |
+| **Production**  | me-central-1       | Live customer traffic                        |
+| **Staging**     | me-central-1       | Pre-production validation, integration tests |
+| **Development** | n/a (local Docker) | Engineer machines                            |
+| **Preview**     | me-central-1       | Per-PR ephemeral environments                |
 
 Staging is a scaled-down mirror of production: same architecture, fewer instances, separate AWS account (cross-account isolation).
 
@@ -216,14 +218,14 @@ Staging is a scaled-down mirror of production: same architecture, fewer instance
 
 ## DNS
 
-| Hostname | Purpose | Provider |
-|---|---|---|
-| `volu.ae` | Marketing site | Cloudflare DNS |
-| `api.volu.ae` | API endpoint | Cloudflare DNS → ALB |
-| `admin.volu.ae` | Admin console | Cloudflare DNS → ALB |
-| `cdn.volu.ae` | Image CDN | Cloudflare DNS → R2 + Images |
-| `staging.volu.ae` | Staging frontend | Cloudflare DNS |
-| `api-staging.volu.ae` | Staging API | Cloudflare DNS → staging ALB |
+| Hostname              | Purpose          | Provider                     |
+| --------------------- | ---------------- | ---------------------------- |
+| `volu.ae`             | Marketing site   | Cloudflare DNS               |
+| `api.volu.ae`         | API endpoint     | Cloudflare DNS → ALB         |
+| `admin.volu.ae`       | Admin console    | Cloudflare DNS → ALB         |
+| `cdn.volu.ae`         | Image CDN        | Cloudflare DNS → R2 + Images |
+| `staging.volu.ae`     | Staging frontend | Cloudflare DNS               |
+| `api-staging.volu.ae` | Staging API      | Cloudflare DNS → staging ALB |
 
 Apex domain handled via Cloudflare. TLS certs from Cloudflare or AWS ACM.
 
@@ -242,19 +244,19 @@ See [06-dr-backup.md](./06-dr-backup.md). Summary:
 
 ## Cost ballpark (steady state, year 1)
 
-| Item | Estimate |
-|---|---|
-| Compute (ECS Fargate) | $1,500/mo |
-| RDS (Multi-AZ + replicas) | $1,200/mo |
-| ElastiCache | $400/mo |
-| ALB + Data transfer | $300/mo |
-| S3/R2 storage | $50/mo |
-| Cloudflare Pro | $20/mo |
-| Sentry | $80/mo |
-| Grafana Cloud (or self-hosted equiv) | $200/mo |
-| WhatsApp Business | $100/mo + per-message |
-| Misc (KMS, Secrets, CW Logs short-term) | $200/mo |
-| **Total infra** | **~$4,000/mo at 50K MAU** |
+| Item                                    | Estimate                  |
+| --------------------------------------- | ------------------------- |
+| Compute (ECS Fargate)                   | $1,500/mo                 |
+| RDS (Multi-AZ + replicas)               | $1,200/mo                 |
+| ElastiCache                             | $400/mo                   |
+| ALB + Data transfer                     | $300/mo                   |
+| S3/R2 storage                           | $50/mo                    |
+| Cloudflare Pro                          | $20/mo                    |
+| Sentry                                  | $80/mo                    |
+| Grafana Cloud (or self-hosted equiv)    | $200/mo                   |
+| WhatsApp Business                       | $100/mo + per-message     |
+| Misc (KMS, Secrets, CW Logs short-term) | $200/mo                   |
+| **Total infra**                         | **~$4,000/mo at 50K MAU** |
 
 Excludes payment processing, SMS (variable per OTP), email, and ads spend. Scales roughly linearly with traffic.
 

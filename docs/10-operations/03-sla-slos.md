@@ -20,12 +20,12 @@ How Volu measures reliability, the targets we hold ourselves to, and the contrac
 
 We classify surfaces by criticality:
 
-| Tier | Surface | Why |
-|---|---|---|
-| **Tier 1 — Money-critical** | Payments, Redemption, Coupon-issuance, Payouts | Direct financial impact if broken |
+| Tier                         | Surface                                         | Why                               |
+| ---------------------------- | ----------------------------------------------- | --------------------------------- |
+| **Tier 1 — Money-critical**  | Payments, Redemption, Coupon-issuance, Payouts  | Direct financial impact if broken |
 | **Tier 2 — Core experience** | Auth, Catalog read, Cart, Search, Notifications | Users can't function without them |
-| **Tier 3 — Supporting** | Reviews, Favourites, Loyalty, Recommendations | Degradation tolerated briefly |
-| **Tier 4 — Internal** | Admin console, Reporting, Analytics | Internal users; SLAs informal |
+| **Tier 3 — Supporting**      | Reviews, Favourites, Loyalty, Recommendations   | Degradation tolerated briefly     |
+| **Tier 4 — Internal**        | Admin console, Reporting, Analytics             | Internal users; SLAs informal     |
 
 ---
 
@@ -33,44 +33,44 @@ We classify surfaces by criticality:
 
 ### Tier 1 — Money-critical
 
-| SLI | SLO | Window |
-|---|---|---|
-| Payment success rate (Stripe / Tabby / Tamara) | ≥ 99.95% | 30 days rolling |
-| `POST /orders` availability | ≥ 99.95% | 30 days |
-| `POST /redemptions/validate` availability | ≥ 99.95% | 30 days |
-| `POST /redemptions/confirm` availability | ≥ 99.95% | 30 days |
-| `POST /redemptions/validate` latency P95 | ≤ 1500 ms | 30 days |
-| `POST /redemptions/confirm` latency P95 | ≤ 1500 ms | 30 days |
-| Coupon issuance from payment success | ≤ 5 s P99 | 30 days |
-| Payout queue → bank reference | ≤ 1 business day P95 | 30 days |
-| Stripe webhook → ledger update | ≤ 30 s P95 | 30 days |
+| SLI                                            | SLO                  | Window          |
+| ---------------------------------------------- | -------------------- | --------------- |
+| Payment success rate (Stripe / Tabby / Tamara) | ≥ 99.95%             | 30 days rolling |
+| `POST /orders` availability                    | ≥ 99.95%             | 30 days         |
+| `POST /redemptions/validate` availability      | ≥ 99.95%             | 30 days         |
+| `POST /redemptions/confirm` availability       | ≥ 99.95%             | 30 days         |
+| `POST /redemptions/validate` latency P95       | ≤ 1500 ms            | 30 days         |
+| `POST /redemptions/confirm` latency P95        | ≤ 1500 ms            | 30 days         |
+| Coupon issuance from payment success           | ≤ 5 s P99            | 30 days         |
+| Payout queue → bank reference                  | ≤ 1 business day P95 | 30 days         |
+| Stripe webhook → ledger update                 | ≤ 30 s P95           | 30 days         |
 
 ### Tier 2 — Core experience
 
-| SLI | SLO | Window |
-|---|---|---|
-| API availability (overall, public endpoints) | ≥ 99.9% | 30 days |
-| API latency P95 (read endpoints) | ≤ 500 ms | 30 days |
-| API latency P95 (write endpoints) | ≤ 800 ms | 30 days |
-| Search latency P95 | ≤ 300 ms | 30 days |
-| Push notification delivery (FCM/APNs ack) | ≥ 99% | 30 days |
-| Push notification delivery latency P95 | ≤ 60 s from event | 30 days |
-| OTP delivery rate | ≥ 98% | 30 days |
+| SLI                                          | SLO               | Window  |
+| -------------------------------------------- | ----------------- | ------- |
+| API availability (overall, public endpoints) | ≥ 99.9%           | 30 days |
+| API latency P95 (read endpoints)             | ≤ 500 ms          | 30 days |
+| API latency P95 (write endpoints)            | ≤ 800 ms          | 30 days |
+| Search latency P95                           | ≤ 300 ms          | 30 days |
+| Push notification delivery (FCM/APNs ack)    | ≥ 99%             | 30 days |
+| Push notification delivery latency P95       | ≤ 60 s from event | 30 days |
+| OTP delivery rate                            | ≥ 98%             | 30 days |
 
 ### Tier 3 — Supporting
 
-| SLI | SLO | Window |
-|---|---|---|
-| API availability | ≥ 99.5% | 30 days |
-| API latency P95 | ≤ 1 s | 30 days |
+| SLI                           | SLO       | Window  |
+| ----------------------------- | --------- | ------- |
+| API availability              | ≥ 99.5%   | 30 days |
+| API latency P95               | ≤ 1 s     | 30 days |
 | Reviews moderation throughput | ≤ 24h P95 | 30 days |
 
 ### Tier 4 — Internal
 
-| SLI | SLO | Window |
-|---|---|---|
-| Admin availability (business hours) | ≥ 99.5% | 30 days |
-| Reporting freshness | ≤ 15 min lag | continuous |
+| SLI                                 | SLO          | Window     |
+| ----------------------------------- | ------------ | ---------- |
+| Admin availability (business hours) | ≥ 99.5%      | 30 days    |
+| Reporting freshness                 | ≤ 15 min lag | continuous |
 
 ---
 
@@ -86,12 +86,12 @@ Every SLO implies an error budget — the allowed unreliability.
 
 ### Budget burn policy
 
-| Burn rate | Action |
-|---|---|
-| < 50% of budget consumed mid-month | Normal operation |
-| 50–80% consumed mid-month | Yellow alert: pause non-essential changes; review recent deploys |
-| > 80% consumed mid-month | Red alert: full freeze on non-critical changes; root-cause review; SEV-2 incident |
-| > 100% consumed | SLO miss for the month: post-mortem mandatory; published in retrospective |
+| Burn rate                          | Action                                                                            |
+| ---------------------------------- | --------------------------------------------------------------------------------- |
+| < 50% of budget consumed mid-month | Normal operation                                                                  |
+| 50–80% consumed mid-month          | Yellow alert: pause non-essential changes; review recent deploys                  |
+| > 80% consumed mid-month           | Red alert: full freeze on non-critical changes; root-cause review; SEV-2 incident |
+| > 100% consumed                    | SLO miss for the month: post-mortem mandatory; published in retrospective         |
 
 Specific automated alerts:
 
@@ -109,6 +109,7 @@ availability = successful_requests / total_requests
 ```
 
 Where:
+
 - "Successful" = HTTP 2xx or 3xx, OR 4xx that's not a server error (e.g., 401, 422 are user errors, not our fault).
 - "Total" excludes synthetic monitor traffic and excludes retries from the same idempotency key.
 - Measured at the load balancer (post-WAF, pre-app).
@@ -116,11 +117,13 @@ Where:
 ### Latency
 
 P50/P95/P99 from histograms in Prometheus, with metric:
+
 ```
 http_request_duration_seconds_bucket{path, method}
 ```
 
 Latency excludes:
+
 - Time spent in 3DS challenges (controlled by issuing bank).
 - Time the user spends entering data (only server time matters).
 
@@ -140,25 +143,25 @@ For merchants and select partners, we publish SLAs. These are looser than intern
 
 ### Merchant-facing SLA
 
-| Commitment | Target |
-|---|---|
-| Platform availability (per calendar month) | 99.5% |
-| Coupon redemption endpoint availability | 99.9% |
-| Coupon redemption latency P95 | < 2 s |
-| Payout queue processing | ≤ 1 business day from approval |
-| Support response — SEV-1 (merchant operations down) | ≤ 1 hour |
-| Support response — SEV-2 (specific feature broken) | ≤ 4 hours |
-| Support response — SEV-3 (everything else) | ≤ 1 business day |
+| Commitment                                          | Target                         |
+| --------------------------------------------------- | ------------------------------ |
+| Platform availability (per calendar month)          | 99.5%                          |
+| Coupon redemption endpoint availability             | 99.9%                          |
+| Coupon redemption latency P95                       | < 2 s                          |
+| Payout queue processing                             | ≤ 1 business day from approval |
+| Support response — SEV-1 (merchant operations down) | ≤ 1 hour                       |
+| Support response — SEV-2 (specific feature broken)  | ≤ 4 hours                      |
+| Support response — SEV-3 (everything else)          | ≤ 1 business day               |
 
 ### Service credits
 
 If we miss an SLA in any month:
 
 | Monthly availability | Service credit (% of fees waived) |
-|---|---|
-| < 99.5% but ≥ 99% | 10% |
-| < 99% but ≥ 95% | 25% |
-| < 95% | 50% |
+| -------------------- | --------------------------------- |
+| < 99.5% but ≥ 99%    | 10%                               |
+| < 99% but ≥ 95%      | 25%                               |
+| < 95%                | 50%                               |
 
 (Calculated against the merchant's commission paid to Volu in that month.)
 
@@ -181,14 +184,15 @@ Updated automatically from synthetic monitor results, with manual overrides duri
 
 ## Reporting cadence
 
-| Report | Frequency | Audience |
-|---|---|---|
-| Weekly SLO report | Weekly | Engineering team |
-| Monthly SLO retrospective | Monthly | Engineering + leadership |
-| Quarterly reliability review | Quarterly | All-hands |
-| Annual reliability summary | Annually | Public-facing (anonymised) |
+| Report                       | Frequency | Audience                   |
+| ---------------------------- | --------- | -------------------------- |
+| Weekly SLO report            | Weekly    | Engineering team           |
+| Monthly SLO retrospective    | Monthly   | Engineering + leadership   |
+| Quarterly reliability review | Quarterly | All-hands                  |
+| Annual reliability summary   | Annually  | Public-facing (anonymised) |
 
 The monthly retrospective covers:
+
 - Did we meet each SLO?
 - If not, why?
 - Action items.

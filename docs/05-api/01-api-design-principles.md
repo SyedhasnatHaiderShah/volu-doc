@@ -45,34 +45,34 @@ These are logically separate even if served by the same backend; auth scope is e
 
 ## Methods
 
-| Method | Use |
-|---|---|
-| `GET` | Read; safe; cacheable; idempotent |
-| `POST` | Create; or non-idempotent action |
-| `PUT` | Replace entire resource (rare) |
-| `PATCH` | Partial update |
-| `DELETE` | Soft-delete |
+| Method   | Use                               |
+| -------- | --------------------------------- |
+| `GET`    | Read; safe; cacheable; idempotent |
+| `POST`   | Create; or non-idempotent action  |
+| `PUT`    | Replace entire resource (rare)    |
+| `PATCH`  | Partial update                    |
+| `DELETE` | Soft-delete                       |
 
 ---
 
 ## Status codes
 
-| Code | When |
-|---|---|
-| `200` | Successful read or update |
-| `201` | Successful resource creation |
-| `202` | Async work accepted (e.g., refund queued) |
-| `204` | Successful delete or no-content response |
-| `400` | Client validation error |
-| `401` | Authentication required or expired |
-| `403` | Authenticated but not authorised |
-| `404` | Resource not found |
-| `409` | Conflict (e.g., duplicate, version mismatch) |
-| `410` | Gone (resource intentionally removed) |
-| `422` | Semantic validation error |
-| `429` | Rate-limited |
-| `500` | Unhandled server error |
-| `502 / 503 / 504` | Upstream / unavailable / timeout |
+| Code              | When                                         |
+| ----------------- | -------------------------------------------- |
+| `200`             | Successful read or update                    |
+| `201`             | Successful resource creation                 |
+| `202`             | Async work accepted (e.g., refund queued)    |
+| `204`             | Successful delete or no-content response     |
+| `400`             | Client validation error                      |
+| `401`             | Authentication required or expired           |
+| `403`             | Authenticated but not authorised             |
+| `404`             | Resource not found                           |
+| `409`             | Conflict (e.g., duplicate, version mismatch) |
+| `410`             | Gone (resource intentionally removed)        |
+| `422`             | Semantic validation error                    |
+| `429`             | Rate-limited                                 |
+| `500`             | Unhandled server error                       |
+| `502 / 503 / 504` | Upstream / unavailable / timeout             |
 
 ---
 
@@ -80,16 +80,16 @@ These are logically separate even if served by the same backend; auth scope is e
 
 ### Headers
 
-| Header | Required | Notes |
-|---|---|---|
-| `Authorization: Bearer <jwt>` | For authed endpoints | |
-| `Content-Type: application/json` | For POST/PATCH | |
-| `Accept-Language: en` or `ar` | Optional | Drives EN/AR copy in responses |
-| `X-Idempotency-Key: <uuid>` | Required for mutations | UUID v4 |
-| `X-Request-Id: <uuid>` | Optional | Echoed in response; client traceability |
-| `X-App-Version: <semver>+<build>` | Required from mobile | For force-update gating |
-| `X-Platform: ios / android / web` | Required | |
-| `X-Device-Id: <fingerprint>` | Required from mobile | |
+| Header                            | Required               | Notes                                   |
+| --------------------------------- | ---------------------- | --------------------------------------- |
+| `Authorization: Bearer <jwt>`     | For authed endpoints   |                                         |
+| `Content-Type: application/json`  | For POST/PATCH         |                                         |
+| `Accept-Language: en` or `ar`     | Optional               | Drives EN/AR copy in responses          |
+| `X-Idempotency-Key: <uuid>`       | Required for mutations | UUID v4                                 |
+| `X-Request-Id: <uuid>`            | Optional               | Echoed in response; client traceability |
+| `X-App-Version: <semver>+<build>` | Required from mobile   | For force-update gating                 |
+| `X-Platform: ios / android / web` | Required               |                                         |
+| `X-Device-Id: <fingerprint>`      | Required from mobile   |                                         |
 
 ### Body
 
@@ -228,6 +228,7 @@ async getDeal(dealId: string, currentUser: User) {
 Mandatory `X-Idempotency-Key` (UUID v4) on every mutating endpoint. Server caches the response keyed by `(idempotencyKey + endpoint + userId + bodyHash)` for 24h.
 
 Retries with the same key:
+
 - Same body → return cached response.
 - Different body → `409 Conflict`.
 
@@ -274,13 +275,13 @@ Each endpoint declares supported `fields` and `include` values.
 
 Per-endpoint limits expressed in requests per minute. Common defaults:
 
-| Endpoint class | Anonymous | Authenticated |
-|---|---|---|
-| Auth (login, OTP, refresh) | 10/min/IP | 30/min/user |
-| Search | 30/min/IP | 60/min/user |
-| Read (deal, merchant) | 60/min/IP | 200/min/user |
-| Cart, checkout, payment | n/a | 30/min/user |
-| Admin endpoints | n/a | 200/min/user |
+| Endpoint class             | Anonymous | Authenticated |
+| -------------------------- | --------- | ------------- |
+| Auth (login, OTP, refresh) | 10/min/IP | 30/min/user   |
+| Search                     | 30/min/IP | 60/min/user   |
+| Read (deal, merchant)      | 60/min/IP | 200/min/user  |
+| Cart, checkout, payment    | n/a       | 30/min/user   |
+| Admin endpoints            | n/a       | 200/min/user  |
 
 When rate-limited:
 
@@ -303,9 +304,9 @@ When the user has set a locale (via `Accept-Language` or stored preference), res
 ```json
 {
   "id": "01HXX...",
-  "title": "Spa Massage",   // resolves to en or ar based on locale
+  "title": "Spa Massage", // resolves to en or ar based on locale
   "titleEn": "Spa Massage", // always present
-  "titleAr": "تدليك سبا"    // always present if available
+  "titleAr": "تدليك سبا" // always present if available
 }
 ```
 
@@ -336,6 +337,7 @@ When deprecating an endpoint:
 OpenAPI 3.1 spec at `/api/openapi.json`. Auto-generated from NestJS controllers + decorators. Hosted Swagger UI at `/api/docs` (admin-only access in production).
 
 Every endpoint must document:
+
 - Path + method
 - Description
 - Request body schema (with examples)

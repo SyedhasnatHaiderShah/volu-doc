@@ -155,6 +155,7 @@ Tested in light + dark themes.
 ## Testing
 
 ### Automated
+
 - **axe-core** runs on every admin page in CI.
 - Flutter `flutter test --update-goldens` includes accessibility-tree assertions.
 - Linter rules forbid `Image` without `semanticLabel` and `IconButton` without `tooltip`.
@@ -162,6 +163,7 @@ Tested in light + dark themes.
 ### Manual
 
 Per release:
+
 - VoiceOver pass on iOS (key flows: signup, purchase, redeem, raffle).
 - TalkBack pass on Android.
 - Keyboard-only navigation pass on admin web (no mouse).
@@ -228,6 +230,7 @@ Every design-system component's documentation states:
 ## Reporting accessibility issues
 
 Users can report accessibility issues via:
+
 - In-app: Settings → Help → Report a problem.
 - Email: a11y@volu.ae.
 

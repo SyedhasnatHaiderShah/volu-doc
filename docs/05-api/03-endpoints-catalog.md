@@ -11,6 +11,7 @@ Format: `METHOD /path` — short description — auth.
 ## Public — User app `/api/v1/...`
 
 ### Auth
+
 - `POST /auth/phone/start` — Send OTP — public
 - `POST /auth/phone/verify` — Verify OTP, issue tokens — public
 - `POST /auth/email/register` — Register with email — public
@@ -23,6 +24,7 @@ Format: `METHOD /path` — short description — auth.
 - `POST /auth/password/reset/confirm` — Apply new password — reset-token only
 
 ### Users
+
 - `GET /users/me` — Current user profile — bearer
 - `PATCH /users/me` — Update profile — bearer
 - `DELETE /users/me` — Request account deletion — bearer
@@ -33,6 +35,7 @@ Format: `METHOD /path` — short description — auth.
 - `POST /users/me/data-export` — Request data export — bearer
 
 ### Discovery
+
 - `GET /home/feed` — Home sections — bearer (or guest with limited content)
 - `GET /categories` — Category tree — public
 - `GET /deals` — List deals (filter, sort, paginate) — bearer
@@ -44,6 +47,7 @@ Format: `METHOD /path` — short description — auth.
 - `GET /search` — Search across deals & merchants — bearer
 
 ### Favourites
+
 - `GET /favourites/deals` — List favourited deals — bearer
 - `POST /favourites/deals/:dealId` — Favourite a deal — bearer
 - `DELETE /favourites/deals/:dealId` — Unfavourite — bearer
@@ -51,6 +55,7 @@ Format: `METHOD /path` — short description — auth.
 - `DELETE /favourites/merchants/:merchantId` — Unfollow — bearer
 
 ### Cart
+
 - `GET /cart` — Read cart — bearer
 - `POST /cart/items` — Add item — bearer
 - `PATCH /cart/items/:id` — Update quantity — bearer
@@ -59,6 +64,7 @@ Format: `METHOD /path` — short description — auth.
 - `DELETE /cart/promo` — Remove promo — bearer
 
 ### Orders & Payments
+
 - `POST /orders` — Create order from cart, returns Stripe client secret — bearer + idempotency
 - `GET /orders` — List orders — bearer
 - `GET /orders/:id` — Order detail — bearer
@@ -67,35 +73,42 @@ Format: `METHOD /path` — short description — auth.
 - `POST /payments/tamara/session` — Create Tamara BNPL session — bearer + idempotency
 
 ### Coupons
+
 - `GET /coupons` — List user's coupons — bearer
 - `GET /coupons/:id` — Coupon detail (includes QR + PIN if biometric-verified) — bearer
 - `POST /coupons/:id/wallet-pass` — Generate Apple/Google Wallet pass — bearer
 - `POST /coupons/:id/gift` — Gift to another user — bearer + idempotency
 
 ### Raffles
+
 - `GET /raffles/current` — Active raffle + my entries — bearer
 - `GET /raffles/:id` — Raffle detail — bearer
 - `GET /raffles/:id/winners` — Past winners — public
 - `POST /raffles/:id/free-entry` — Daily check-in free entry — bearer
 
 ### Loyalty & Referrals
+
 - `GET /loyalty/balance` — Points + wallet credit — bearer
 - `GET /loyalty/transactions` — History — bearer
 - `GET /referrals/code` — My referral code + share link — bearer
 - `GET /referrals` — My referrals + statuses — bearer
 
 ### Reviews
+
 - `POST /reviews` — Submit review — bearer + idempotency
 - `GET /reviews/me` — My reviews — bearer
 
 ### Notifications (in-app)
+
 - `GET /notifications/in-app` — Unread + recent — bearer
 - `POST /notifications/in-app/:id/read` — Mark read — bearer
 
 ### Devices (push)
+
 - `POST /devices/push-token` — Register/update push token — bearer
 
 ### Misc
+
 - `GET /content/:slug` — CMS static content (T&Cs, etc.) — public
 - `GET /app-version` — Min/recommended version — public
 - `GET /feature-flags` — Client-evaluated flags — bearer
@@ -105,12 +118,14 @@ Format: `METHOD /path` — short description — auth.
 ## Merchant app `/api/v1/merchant/...`
 
 ### Auth
+
 - `POST /merchant/auth/phone/start` — Same as user but routes to merchant context — public
 - `POST /merchant/auth/phone/verify` — Returns merchant-scoped JWT — public
 - `GET /merchant/auth/memberships` — List merchants this user belongs to — bearer
 - `POST /merchant/auth/switch-merchant` — Switch active merchant — bearer
 
 ### Onboarding
+
 - `POST /merchant/signup` — Create merchant — bearer
 - `PATCH /merchant/profile` — Update profile — owner
 - `POST /merchant/branches` — Add branch — owner
@@ -122,6 +137,7 @@ Format: `METHOD /path` — short description — auth.
 - `DELETE /merchant/staff/:userId` — Revoke staff — owner
 
 ### Deals
+
 - `GET /merchant/deals` — List my deals — owner/branch_manager
 - `POST /merchant/deals` — Create draft — owner/branch_manager
 - `GET /merchant/deals/:id` — Detail — owner/branch_manager
@@ -134,6 +150,7 @@ Format: `METHOD /path` — short description — auth.
 - `GET /merchant/deals/:id/analytics` — Funnel + redemption — owner/branch_manager
 
 ### Redemption (cashier)
+
 - `POST /merchant/redemptions/validate` — Validate QR token — cashier+
 - `POST /merchant/redemptions/confirm` — Confirm with PIN — cashier+ + idempotency
 - `POST /merchant/redemptions/manual-code` — Validate by short code — cashier+
@@ -141,6 +158,7 @@ Format: `METHOD /path` — short description — auth.
 - `GET /merchant/redemptions` — Recent redemptions list — cashier+
 
 ### Wallet, Payouts
+
 - `GET /merchant/wallet` — Available, pending, lifetime — owner/accountant
 - `GET /merchant/wallet/ledger` — Ledger entries — owner/accountant
 - `POST /merchant/payouts` — Request payout — owner
@@ -148,6 +166,7 @@ Format: `METHOD /path` — short description — auth.
 - `GET /merchant/payouts/:id/statement.pdf` — Download PDF — owner/accountant
 
 ### Insights & Messages
+
 - `GET /merchant/dashboard` — KPI overview — owner/branch_manager/accountant
 - `GET /merchant/messages` — Admin messages — owner
 - `GET /merchant/reviews` — Reviews of this merchant — owner/branch_manager
@@ -158,12 +177,14 @@ Format: `METHOD /path` — short description — auth.
 ## Admin console `/api/v1/admin/...`
 
 ### Auth
+
 - `POST /admin/auth/login` — Email + password (challenge-token only) — public
 - `POST /admin/auth/2fa` — TOTP, issue tokens — challenge-token
 - `POST /admin/auth/refresh` — Rotate — refresh
 - `POST /admin/auth/logout` — — admin
 
 ### Dashboard
+
 - `GET /admin/dashboard/kpis` — Top-strip KPIs — admin
 - `GET /admin/dashboard/timeseries?metric=&from=&to=` — Charts — admin
 - `GET /admin/dashboard/funnel` — Install→purchase→redeem funnel — admin
@@ -171,6 +192,7 @@ Format: `METHOD /path` — short description — auth.
 - `GET /admin/dashboard/anomalies` — Active anomaly alerts — admin
 
 ### Merchants
+
 - `GET /admin/merchants` — List + filter — ops/super
 - `GET /admin/merchants/:id` — Detail — ops/super
 - `POST /admin/merchants/:id/approve-kyc` — Approve KYC — ops/super
@@ -184,6 +206,7 @@ Format: `METHOD /path` — short description — auth.
 - `GET /admin/kyc-queue` — Pending KYC queue — ops/super
 
 ### Deals
+
 - `GET /admin/deals` — List + filter — ops/super
 - `GET /admin/deals/queue` — Submitted-for-approval queue — ops/super
 - `POST /admin/deals/:id/approve` — Approve — ops/super
@@ -194,6 +217,7 @@ Format: `METHOD /path` — short description — auth.
 - `POST /admin/deals/:id/promote` — Create Meta/TikTok ad campaign — marketing/super
 
 ### Coupons / Orders / Refunds
+
 - `GET /admin/coupons?search=` — Search by short_code/user/merchant/order — ops/support/super
 - `GET /admin/coupons/:id` — Coupon detail with full history — ops/support/super
 - `POST /admin/coupons/issue` — Manually issue (compensation) — support/super
@@ -204,6 +228,7 @@ Format: `METHOD /path` — short description — auth.
 - `POST /admin/disputes/:id/submit-evidence` — Submit dispute evidence — finance/super
 
 ### Payouts & Finance
+
 - `GET /admin/payouts/queue` — Pending payout requests — finance/super
 - `POST /admin/payouts/:id/approve` — Approve payout — finance/super
 - `POST /admin/payouts/:id/reject` — Reject — finance/super
@@ -213,6 +238,7 @@ Format: `METHOD /path` — short description — auth.
 - `GET /admin/finance/invoices` — Invoice list — finance/super
 
 ### Raffles
+
 - `POST /admin/raffles` — Create raffle — marketing/super
 - `GET /admin/raffles` — List — marketing/super
 - `GET /admin/raffles/:id` — Detail — marketing/super
@@ -222,6 +248,7 @@ Format: `METHOD /path` — short description — auth.
 - `POST /admin/raffles/:id/winners/:winnerId/fulfil` — Mark prize fulfilled — marketing/super
 
 ### Marketing
+
 - `POST /admin/notifications/push` — Send push campaign — marketing/super
 - `POST /admin/notifications/email` — Send email campaign — marketing/super
 - `POST /admin/notifications/whatsapp` — Send WhatsApp campaign — marketing/super
@@ -229,6 +256,7 @@ Format: `METHOD /path` — short description — auth.
 - `POST /admin/promo-codes` — Create promo code — marketing/super
 
 ### Ads
+
 - `POST /admin/ads/oauth/meta/start` — Begin Meta OAuth — marketing/super
 - `POST /admin/ads/oauth/tiktok/start` — Begin TikTok OAuth — marketing/super
 - `POST /admin/ads/campaigns` — Create campaign — marketing/super
@@ -238,6 +266,7 @@ Format: `METHOD /path` — short description — auth.
 - `GET /admin/ads/dashboard` — Spend, ROAS, etc. — marketing/super
 
 ### Content / CMS
+
 - `GET /admin/categories` — List — ops/super
 - `POST /admin/categories` — Create — ops/super
 - `PATCH /admin/categories/:id` — Edit — ops/super
@@ -247,6 +276,7 @@ Format: `METHOD /path` — short description — auth.
 - `POST /admin/content/:slug/version` — Publish new version — ops/super
 
 ### System
+
 - `GET /admin/feature-flags` — List — super
 - `PATCH /admin/feature-flags/:key` — Toggle — super
 - `GET /admin/app-versions` — Min/recommended — super

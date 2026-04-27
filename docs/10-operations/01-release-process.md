@@ -8,13 +8,13 @@ How Volu ships changes to production safely and quickly.
 
 ## Release cadences
 
-| Surface | Cadence | Mechanism |
-|---|---|---|
-| Backend | Continuous (multiple per day) | Auto-deploy on merge to `main` after staging |
-| Admin web | Continuous | Vercel on merge |
-| Mobile (iOS + Android) | Every 2 weeks | App Store + Play Console rollout |
-| Hotfix mobile (rare) | As needed | Expedited App Store review or Shorebird OTA |
-| Database schema | Continuous (within expand-then-contract pattern) | Co-deployed with code |
+| Surface                | Cadence                                          | Mechanism                                    |
+| ---------------------- | ------------------------------------------------ | -------------------------------------------- |
+| Backend                | Continuous (multiple per day)                    | Auto-deploy on merge to `main` after staging |
+| Admin web              | Continuous                                       | Vercel on merge                              |
+| Mobile (iOS + Android) | Every 2 weeks                                    | App Store + Play Console rollout             |
+| Hotfix mobile (rare)   | As needed                                        | Expedited App Store review or Shorebird OTA  |
+| Database schema        | Continuous (within expand-then-contract pattern) | Co-deployed with code                        |
 
 ---
 
@@ -89,6 +89,7 @@ When a critical bug must ship outside the normal cadence:
 5. Backport to any active release branches.
 
 For mobile:
+
 - **App Store expedited review** — submit with justification; usually approved within 24h.
 - **Shorebird OTA** — only for true emergencies (security, data loss); each use logged.
 
@@ -150,6 +151,7 @@ Risky features ship behind a flag. Flags toggled in admin:
 Changes propagate within 60s (via Redis pub/sub).
 
 Use flags for:
+
 - New checkout flow rolling out gradually
 - Experimental UI variants
 - Quick disable for a buggy feature
@@ -180,10 +182,12 @@ The backend supports the latest **2 minor versions** of mobile clients at any ti
 ## Communication
 
 ### Internal
+
 - Each release has a Slack thread in `#releases` with deploy markers.
 - Major features get a brief written summary linked.
 
 ### External (mobile)
+
 - Release notes in stores.
 - In-app "What's new" splash for major releases (sparingly used).
 

@@ -38,22 +38,23 @@ Provider → POST /api/v1/webhooks/<provider>
 
 Critical events:
 
-| Event | Action |
-|---|---|
-| `payment_intent.succeeded` | Mark order paid; emit `order.paid` |
-| `payment_intent.payment_failed` | Mark order failed; release inventory |
-| `charge.refunded` | Reconcile refund record |
-| `charge.dispute.created` | Open dispute case; freeze merchant balance |
-| `charge.dispute.closed` | Resolve dispute; unfreeze or finalise refund |
-| `payout.paid` | (Stripe Connect) Mark merchant payout paid |
-| `payout.failed` | Mark payout failed; refund balance to merchant |
-| `account.updated` (Connect) | Sync merchant Connect account state |
+| Event                           | Action                                         |
+| ------------------------------- | ---------------------------------------------- |
+| `payment_intent.succeeded`      | Mark order paid; emit `order.paid`             |
+| `payment_intent.payment_failed` | Mark order failed; release inventory           |
+| `charge.refunded`               | Reconcile refund record                        |
+| `charge.dispute.created`        | Open dispute case; freeze merchant balance     |
+| `charge.dispute.closed`         | Resolve dispute; unfreeze or finalise refund   |
+| `payout.paid`                   | (Stripe Connect) Mark merchant payout paid     |
+| `payout.failed`                 | Mark payout failed; refund balance to merchant |
+| `account.updated` (Connect)     | Sync merchant Connect account state            |
 
 Signature verification:
+
 ```ts
 const event = stripe.webhooks.constructEvent(
   rawBody,
-  req.headers['stripe-signature'],
+  req.headers["stripe-signature"],
   env.STRIPE_WEBHOOK_SECRET,
 );
 ```
@@ -62,12 +63,12 @@ const event = stripe.webhooks.constructEvent(
 
 ### Tabby webhook handling
 
-| Event | Action |
-|---|---|
-| `payment.created` | Order moves to `pending` (already in this state) |
+| Event                | Action                                                     |
+| -------------------- | ---------------------------------------------------------- |
+| `payment.created`    | Order moves to `pending` (already in this state)           |
 | `payment.authorized` | Mark order paid; trigger same fulfilment as Stripe success |
-| `payment.closed` | Settled |
-| `payment.rejected` | Order failed |
+| `payment.closed`     | Settled                                                    |
+| `payment.rejected`   | Order failed                                               |
 
 Signature: HMAC of body using webhook secret.
 
@@ -82,6 +83,7 @@ Similar to Tabby. Tamara sends `order_approved`, `order_rejected`, `order_cancel
 ### WhatsApp webhook
 
 Two kinds:
+
 - **Delivery status** — for our outbound WhatsApp messages.
 - **Inbound replies** — when a user replies to our WhatsApp message; we route to support.
 
@@ -142,6 +144,7 @@ header = `t=${timestamp},v1=${hex(sig)}`
 ```
 
 Receiver validates:
+
 1. Parse `t` and `v1` from header.
 2. Recompute HMAC; constant-time compare.
 3. Reject if `now - t > 5 minutes` (replay protection).
@@ -150,15 +153,15 @@ Receiver validates:
 
 If the partner endpoint returns non-2xx or times out:
 
-| Attempt | Delay |
-|---|---|
-| 1 | immediate |
-| 2 | 1 min |
-| 3 | 5 min |
-| 4 | 15 min |
-| 5 | 1 hour |
-| 6 | 6 hours |
-| 7 | 24 hours |
+| Attempt | Delay     |
+| ------- | --------- |
+| 1       | immediate |
+| 2       | 1 min     |
+| 3       | 5 min     |
+| 4       | 15 min    |
+| 5       | 1 hour    |
+| 6       | 6 hours   |
+| 7       | 24 hours  |
 
 After 7 failures, the subscription is paused; partner notified.
 
@@ -173,6 +176,7 @@ Admin UI shows delivery history per subscription with replay-individual-event bu
 ## Standard event payloads
 
 ### `coupon.purchased`
+
 ```json
 {
   "couponId": "01HXX...",
@@ -187,6 +191,7 @@ Admin UI shows delivery history per subscription with replay-individual-event bu
 ```
 
 ### `coupon.redeemed`
+
 ```json
 {
   "couponId": "01HXX...",
@@ -201,6 +206,7 @@ Admin UI shows delivery history per subscription with replay-individual-event bu
 ```
 
 ### `coupon.expired`
+
 ```json
 {
   "couponId": "01HXX...",
@@ -212,6 +218,7 @@ Admin UI shows delivery history per subscription with replay-individual-event bu
 ```
 
 ### `coupon.refunded`
+
 ```json
 {
   "couponId": "01HXX...",
@@ -224,6 +231,7 @@ Admin UI shows delivery history per subscription with replay-individual-event bu
 ```
 
 ### `payout.paid`
+
 ```json
 {
   "payoutId": "01HXX...",

@@ -1,0 +1,24 @@
+# Global owners
+* @SyedhasnatHaiderShah
+
+# Requirements and Product
+/docs/01-overview/ @SyedhasnatHaiderShah
+/docs/02-requirements/ @SyedhasnatHaiderShah
+
+# Architecture
+/docs/03-architecture/ @SyedhasnatHaiderShah
+
+# Data and API
+/docs/04-data-model/ @SyedhasnatHaiderShah
+/docs/05-api/ @SyedhasnatHaiderShah
+
+# Security and Infra
+/docs/06-security/ @SyedhasnatHaiderShah
+/docs/07-infrastructure/ @SyedhasnatHaiderShah
+
+# UI/UX
+/docs/08-uiux/ @SyedhasnatHaiderShah
+
+# Development and Operations
+/docs/09-development/ @SyedhasnatHaiderShah
+/docs/10-operations/ @SyedhasnatHaiderShah

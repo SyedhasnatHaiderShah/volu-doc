@@ -14,6 +14,7 @@ Volu's defining value vs Cobone, Groupon, Entertainer is **trust**. Every screen
 - **No friction at redemption.** The most painful moment for our users on competing platforms is the awkward conversation at the merchant counter. Volu's redemption flow eliminates that.
 
 **Design implications:**
+
 - All-in price always visible.
 - Verified Merchant badge prominent.
 - Clear refund policy on every coupon.
@@ -69,12 +70,14 @@ The merchant cashier flow is the extreme case: a user with one hand free, in a h
 A slow UI is a bad UI. We treat performance the same way we treat colour or typography: a design constraint to respect.
 
 Targets:
+
 - **Cold start:** ≤ 2.5s on iPhone 12 / Galaxy S21.
 - **Frame rate:** 60 fps minimum across all flows.
 - **API responses:** P95 ≤ 500ms.
 - **Image load:** progressive blurhash → low-res → full-res.
 
 Design implications:
+
 - No dense lists without virtualisation.
 - No animations that drop below 30 fps on target devices.
 - Skeleton screens replace spinners for content-heavy views.

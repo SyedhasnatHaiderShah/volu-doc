@@ -86,26 +86,26 @@ erDiagram
 
 Each table belongs to exactly one module:
 
-| Module | Tables |
-|---|---|
-| **Identity** | `users`, `user_devices`, `merchants`, `merchant_branches`, `merchant_users`, `kyc_documents`, `admin_users`, `sessions` |
-| **Catalog** | `categories`, `deals`, `deal_versions`, `deal_branches`, `deal_tags`, `tags` |
-| **Commerce** | `orders`, `order_items`, `carts`, `cart_items`, `promo_codes`, `promo_code_usages` |
-| **Payments** | `payments`, `payment_methods`, `payment_intents`, `inbound_webhooks` |
-| **Coupons** | `coupons`, `coupon_pin_attempts` |
-| **Redemption** | `redemptions`, `redemption_queue_offline` |
-| **Wallet** | `merchant_ledger`, `breakage_ledger` |
-| **Payouts** | `payouts`, `payout_line_items`, `bank_accounts` |
-| **Refunds** | `refunds` |
-| **Raffles** | `raffles`, `raffle_prizes`, `raffle_rules`, `raffle_entries`, `raffle_winners`, `raffle_seed_commitments` |
-| **Loyalty** | `loyalty_balances`, `loyalty_transactions`, `referrals` |
-| **Reviews** | `reviews`, `review_responses` |
-| **Notifications** | `notifications`, `notification_preferences`, `notification_templates`, `push_devices` |
-| **Ads** | `ad_campaigns`, `ad_campaign_metrics`, `ad_audience_templates` |
-| **Invoicing** | `invoices`, `invoice_line_items` |
-| **Favourites** | `favourites`, `merchant_follows` |
-| **Audit** | `audit_logs` |
-| **System** | `outbox_events`, `feature_flags`, `app_versions` |
+| Module            | Tables                                                                                                                  |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| **Identity**      | `users`, `user_devices`, `merchants`, `merchant_branches`, `merchant_users`, `kyc_documents`, `admin_users`, `sessions` |
+| **Catalog**       | `categories`, `deals`, `deal_versions`, `deal_branches`, `deal_tags`, `tags`                                            |
+| **Commerce**      | `orders`, `order_items`, `carts`, `cart_items`, `promo_codes`, `promo_code_usages`                                      |
+| **Payments**      | `payments`, `payment_methods`, `payment_intents`, `inbound_webhooks`                                                    |
+| **Coupons**       | `coupons`, `coupon_pin_attempts`                                                                                        |
+| **Redemption**    | `redemptions`, `redemption_queue_offline`                                                                               |
+| **Wallet**        | `merchant_ledger`, `breakage_ledger`                                                                                    |
+| **Payouts**       | `payouts`, `payout_line_items`, `bank_accounts`                                                                         |
+| **Refunds**       | `refunds`                                                                                                               |
+| **Raffles**       | `raffles`, `raffle_prizes`, `raffle_rules`, `raffle_entries`, `raffle_winners`, `raffle_seed_commitments`               |
+| **Loyalty**       | `loyalty_balances`, `loyalty_transactions`, `referrals`                                                                 |
+| **Reviews**       | `reviews`, `review_responses`                                                                                           |
+| **Notifications** | `notifications`, `notification_preferences`, `notification_templates`, `push_devices`                                   |
+| **Ads**           | `ad_campaigns`, `ad_campaign_metrics`, `ad_audience_templates`                                                          |
+| **Invoicing**     | `invoices`, `invoice_line_items`                                                                                        |
+| **Favourites**    | `favourites`, `merchant_follows`                                                                                        |
+| **Audit**         | `audit_logs`                                                                                                            |
+| **System**        | `outbox_events`, `feature_flags`, `app_versions`                                                                        |
 
 Cross-module reads via the owning module's repository, not direct SQL.
 
@@ -631,18 +631,18 @@ erDiagram
 
 ## Sizing & growth assumptions
 
-| Table | Rows after 12 months (target) | Strategy |
-|---|---|---|
-| `users` | ~150,000 | Single table; B-tree on `phone`, `email` |
-| `merchants` | ~600 | Trivial |
-| `deals` | ~5,000 active + ~30,000 historical | Partial index on `status='approved'` |
-| `orders` | ~2,000,000 | Range-partitioned by `created_at` quarterly after 6 months |
-| `coupons` | ~3,000,000 | Range-partitioned by `created_at` quarterly after 6 months |
-| `redemptions` | ~2,000,000 | Range-partitioned by `redeemed_at` quarterly |
-| `merchant_ledger` | ~6,000,000 | Range-partitioned by `created_at` quarterly |
-| `raffle_entries` | ~10,000,000 | Range-partitioned by `raffle_id` |
-| `audit_logs` | ~5,000,000 | Append-only; range-partitioned by `created_at` monthly; archived after 12 months |
-| `notifications` | ~50,000,000 | Range-partitioned by `created_at` weekly; pruned after 90 days |
+| Table             | Rows after 12 months (target)      | Strategy                                                                         |
+| ----------------- | ---------------------------------- | -------------------------------------------------------------------------------- |
+| `users`           | ~150,000                           | Single table; B-tree on `phone`, `email`                                         |
+| `merchants`       | ~600                               | Trivial                                                                          |
+| `deals`           | ~5,000 active + ~30,000 historical | Partial index on `status='approved'`                                             |
+| `orders`          | ~2,000,000                         | Range-partitioned by `created_at` quarterly after 6 months                       |
+| `coupons`         | ~3,000,000                         | Range-partitioned by `created_at` quarterly after 6 months                       |
+| `redemptions`     | ~2,000,000                         | Range-partitioned by `redeemed_at` quarterly                                     |
+| `merchant_ledger` | ~6,000,000                         | Range-partitioned by `created_at` quarterly                                      |
+| `raffle_entries`  | ~10,000,000                        | Range-partitioned by `raffle_id`                                                 |
+| `audit_logs`      | ~5,000,000                         | Append-only; range-partitioned by `created_at` monthly; archived after 12 months |
+| `notifications`   | ~50,000,000                        | Range-partitioned by `created_at` weekly; pruned after 90 days                   |
 
 ---
 

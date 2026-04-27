@@ -1,0 +1,1 @@
+pnpm exec prettier --check . && pnpm exec markdownlint '**/*.md' --ignore node_modules

@@ -1,44 +1,34 @@
-# volu-docs
+# Volu Documentation
 
-The technical specification, architecture, and operational handbook for **Volu** — an AI-assisted coupon marketplace SaaS for the UAE.
+**Status:** 🟢 Approved
 
-The full documentation lives in [`/docs`](./docs).
+This is the source-of-truth documentation for the Volu platform — an AI-assisted coupon marketplace SaaS for the UAE. It contains the complete technical specification, architecture design, data model, and operational guidelines.
 
-Start here: [`docs/README.md`](./docs/README.md).
+## Repository Structure
 
-## What's in here
+```
+volu-doc/
+├── docs/                    # Technical specifications and guides
+│   ├── 01-overview/         # Product overview and glossary
+│   ├── 02-requirements/     # Functional and non-functional requirements
+│   ├── 03-architecture/     # System and component architecture
+│   ├── 04-data-model/       # ERD and entity details
+│   ├── 05-api/              # API design and catalog
+│   ├── 06-security/         # Security controls and compliance
+│   ├── 07-infrastructure/   # Cloud topology and CI/CD
+│   ├── 08-uiux/             # Design system and accessibility
+│   ├── 09-development/      # Coding standards and dev setup
+│   └── 10-operations/       # Runbooks and release process
+└── README.md
+```
 
-A complete engineering-grade specification covering:
+## Related Repositories
 
-- Product overview, personas, success metrics
-- Functional and non-functional requirements
-- System, backend, mobile, and admin architecture
-- Full data model with entity-level schema
-- API design, authentication, and endpoint catalogue
-- Security: threat model, controls, PCI/PDPL compliance, incident response
-- Infrastructure: AWS topology, networking, databases, CI/CD, observability, DR
-- UI/UX: design principles, design system, accessibility, bilingual/RTL, critical flows
-- Development: monorepo structure, coding standards, testing, git workflow, dev setup
-- Operations: release process, runbooks, SLAs, on-call
+- [volu-backend](https://github.com/SyedhasnatHaiderShah/volu-backend)
+- [volu-admin](https://github.com/SyedhasnatHaiderShah/volu-admin)
+- [volu-mobile](https://github.com/SyedhasnatHaiderShah/volu-mobile)
+- [volu-infra](https://github.com/SyedhasnatHaiderShah/volu-infra)
 
-## Status
+## License
 
-🟢 Approved — v1.0 (April 2026)
-
-## Brand
-
-**Volu** — Unbeatable. Exclusive. Now.
-
-## Conventions
-
-- Docs use stable IDs that never get reused: `FR-XXX`, `NFR-XXX`, `UC-XXX`, `US-XXX`, `T-XXX`, `SC-XXX`, `RB-XXX`.
-- Money in fils (1 AED = 100 fils), always integer, never floats.
-- Timestamps in UTC (TIMESTAMPTZ); rendered in `Asia/Dubai`.
-- IDs are UUID v7.
-- Bilingual EN + AR throughout, RTL parity required.
-
-## Maintenance
-
-- Each doc carries a status badge.
-- Architectural decisions captured in `/adr` (Architecture Decision Records).
-- Updates flow through PRs with the same review rules as code.
+Proprietary. Copyright (c) 2026 Volu.

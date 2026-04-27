@@ -32,26 +32,26 @@ Three gaps in the live UAE market:
 
 Every one of those complaints becomes a Volu feature:
 
-| Competitor problem | Volu solution |
-|---|---|
+| Competitor problem           | Volu solution                                                                 |
+| ---------------------------- | ----------------------------------------------------------------------------- |
 | Voucher rejected at merchant | KYC-gated merchants, contractually bound; 24h full-refund promise if rejected |
-| Hidden top-ups at redemption | "All-in-price guarantee" — surcharges = auto-suspend + refund |
-| Support unreachable | In-app live chat 7 days/week |
-| No merchant vetting | Mandatory trade licence + Emirates ID + IBAN verification before going live |
-| No engagement between buys | Monthly raffle with entries per purchase; real flash deals with countdowns |
-| Merchants paid slowly | Real-time wallet ledger; self-service payout requests from AED 200 |
+| Hidden top-ups at redemption | "All-in-price guarantee" — surcharges = auto-suspend + refund                 |
+| Support unreachable          | In-app live chat 7 days/week                                                  |
+| No merchant vetting          | Mandatory trade licence + Emirates ID + IBAN verification before going live   |
+| No engagement between buys   | Monthly raffle with entries per purchase; real flash deals with countdowns    |
+| Merchants paid slowly        | Real-time wallet ledger; self-service payout requests from AED 200            |
 
 ---
 
 ## Revenue model (hybrid)
 
-| Stream | How | Rate |
-|---|---|---|
-| Sales commission | % of each coupon sold | 15–25% |
-| Breakage profit | 100% of unredeemed coupon value | on ~20–35% of sold coupons |
-| Featured placement | Paid boost in home feed / category top | AED 300–2,500/week |
-| Performance ads | Volu runs Meta/TikTok ads for a deal | Cost-plus + media fee |
-| Volu Pro (future) | Merchant subscription tier | AED 299/month |
+| Stream             | How                                    | Rate                       |
+| ------------------ | -------------------------------------- | -------------------------- |
+| Sales commission   | % of each coupon sold                  | 15–25%                     |
+| Breakage profit    | 100% of unredeemed coupon value        | on ~20–35% of sold coupons |
+| Featured placement | Paid boost in home feed / category top | AED 300–2,500/week         |
+| Performance ads    | Volu runs Meta/TikTok ads for a deal   | Cost-plus + media fee      |
+| Volu Pro (future)  | Merchant subscription tier             | AED 299/month              |
 
 **Illustrative:** 100 coupons sold at AED 150 with 20% commission and 70% redemption = **AED 6,600 revenue** vs **AED 3,000 commission-only**.
 
@@ -59,14 +59,14 @@ Every one of those complaints becomes a Volu feature:
 
 ## Platform snapshot
 
-| Dimension | Choice |
-|---|---|
-| Geography | UAE-first (Dubai) |
-| Currency | AED |
-| Languages | English + Arabic (full RTL) |
-| Payment rails | Stripe cards, Apple Pay, Google Pay, Careem Pay, Tabby, Tamara |
-| Data residency | AWS me-central-1 (Bahrain) |
-| VAT | 5% UAE VAT, FTA-compliant invoicing |
+| Dimension      | Choice                                                         |
+| -------------- | -------------------------------------------------------------- |
+| Geography      | UAE-first (Dubai)                                              |
+| Currency       | AED                                                            |
+| Languages      | English + Arabic (full RTL)                                    |
+| Payment rails  | Stripe cards, Apple Pay, Google Pay, Careem Pay, Tabby, Tamara |
+| Data residency | AWS me-central-1 (Bahrain)                                     |
+| VAT            | 5% UAE VAT, FTA-compliant invoicing                            |
 
 ---
 

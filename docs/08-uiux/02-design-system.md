@@ -20,46 +20,46 @@ The Volu design system — tokens, components, motion. Lives as code in `package
 
 ### Primary palette
 
-| Token | Hex | Use |
-|---|---|---|
+| Token              | Hex       | Use                                                            |
+| ------------------ | --------- | -------------------------------------------------------------- |
 | `volu.primary.900` | `#0F172A` | Brand primary — deep slate. Used for major surfaces, headings. |
-| `volu.primary.800` | `#1E293B` | Hover/pressed for primary surfaces |
-| `volu.primary.700` | `#334155` | |
-| `volu.primary.600` | `#475569` | |
-| `volu.primary.500` | `#64748B` | Body text on light backgrounds |
-| `volu.primary.400` | `#94A3B8` | Muted/disabled text |
-| `volu.primary.200` | `#E2E8F0` | Borders, dividers |
-| `volu.primary.100` | `#F1F5F9` | Subtle backgrounds |
-| `volu.primary.50` | `#F8FAFC` | Page backgrounds |
+| `volu.primary.800` | `#1E293B` | Hover/pressed for primary surfaces                             |
+| `volu.primary.700` | `#334155` |                                                                |
+| `volu.primary.600` | `#475569` |                                                                |
+| `volu.primary.500` | `#64748B` | Body text on light backgrounds                                 |
+| `volu.primary.400` | `#94A3B8` | Muted/disabled text                                            |
+| `volu.primary.200` | `#E2E8F0` | Borders, dividers                                              |
+| `volu.primary.100` | `#F1F5F9` | Subtle backgrounds                                             |
+| `volu.primary.50`  | `#F8FAFC` | Page backgrounds                                               |
 
 ### Accent — orange
 
-| Token | Hex | Use |
-|---|---|---|
+| Token             | Hex       | Use                       |
+| ----------------- | --------- | ------------------------- |
 | `volu.accent.500` | `#F97316` | Primary CTA, brand accent |
-| `volu.accent.600` | `#EA580C` | Hover/pressed |
-| `volu.accent.100` | `#FED7AA` | Soft accent backgrounds |
-| `volu.accent.50` | `#FFF7ED` | |
+| `volu.accent.600` | `#EA580C` | Hover/pressed             |
+| `volu.accent.100` | `#FED7AA` | Soft accent backgrounds   |
+| `volu.accent.50`  | `#FFF7ED` |                           |
 
 ### Gold (premium / verified)
 
-| Token | Hex | Use |
-|---|---|---|
+| Token           | Hex       | Use                          |
+| --------------- | --------- | ---------------------------- |
 | `volu.gold.500` | `#C8A04F` | Verified badge, premium tier |
-| `volu.gold.100` | `#F5E9C7` | |
+| `volu.gold.100` | `#F5E9C7` |                              |
 
 ### Semantic colours
 
-| Token | Hex | Use |
-|---|---|---|
+| Token         | Hex       | Use                             |
+| ------------- | --------- | ------------------------------- |
 | `success.500` | `#16A34A` | Success states (redeemed, paid) |
-| `success.50` | `#DCFCE7` | |
-| `warning.500` | `#EAB308` | Warning states (expiring soon) |
-| `warning.50` | `#FEF9C3` | |
-| `danger.500` | `#DC2626` | Errors, destructive actions |
-| `danger.50` | `#FEE2E2` | |
-| `info.500` | `#0EA5E9` | Informational |
-| `info.50` | `#E0F2FE` | |
+| `success.50`  | `#DCFCE7` |                                 |
+| `warning.500` | `#EAB308` | Warning states (expiring soon)  |
+| `warning.50`  | `#FEF9C3` |                                 |
+| `danger.500`  | `#DC2626` | Errors, destructive actions     |
+| `danger.50`   | `#FEE2E2` |                                 |
+| `info.500`    | `#0EA5E9` | Informational                   |
+| `info.50`     | `#E0F2FE` |                                 |
 
 ### Dark mode
 
@@ -73,18 +73,18 @@ Primary inverted: dark backgrounds, light text. Same accent + semantic palette w
 
 **Font:** Inter (variable). Fallback: system sans-serif.
 
-| Token | Size / Line | Weight | Use |
-|---|---|---|---|
-| `display` | 36 / 44 | 700 | Hero / brand moments |
-| `h1` | 28 / 36 | 700 | Page titles |
-| `h2` | 22 / 30 | 600 | Section titles |
-| `h3` | 18 / 26 | 600 | Subsection / card titles |
-| `body-lg` | 17 / 26 | 400 | Featured body text |
-| `body` | 15 / 22 | 400 | Default body |
-| `body-sm` | 13 / 20 | 400 | Secondary text |
-| `caption` | 12 / 16 | 500 | Labels, metadata |
-| `numeric-lg` | 28 / 32 | 600 | Prices in hero positions |
-| `numeric` | 18 / 24 | 600 | Inline prices |
+| Token        | Size / Line | Weight | Use                      |
+| ------------ | ----------- | ------ | ------------------------ |
+| `display`    | 36 / 44     | 700    | Hero / brand moments     |
+| `h1`         | 28 / 36     | 700    | Page titles              |
+| `h2`         | 22 / 30     | 600    | Section titles           |
+| `h3`         | 18 / 26     | 600    | Subsection / card titles |
+| `body-lg`    | 17 / 26     | 400    | Featured body text       |
+| `body`       | 15 / 22     | 400    | Default body             |
+| `body-sm`    | 13 / 20     | 400    | Secondary text           |
+| `caption`    | 12 / 16     | 500    | Labels, metadata         |
+| `numeric-lg` | 28 / 32     | 600    | Prices in hero positions |
+| `numeric`    | 18 / 24     | 600    | Inline prices            |
 
 ### Arabic script
 
@@ -92,11 +92,11 @@ Primary inverted: dark backgrounds, light text. Same accent + semantic palette w
 
 Same scale, slightly larger sizes (Arabic glyphs visually smaller than Latin):
 
-| Token | Size / Line |
-|---|---|
-| `display-ar` | 38 / 48 |
-| `h1-ar` | 30 / 40 |
-| `body-ar` | 16 / 26 |
+| Token        | Size / Line |
+| ------------ | ----------- |
+| `display-ar` | 38 / 48     |
+| `h1-ar`      | 30 / 40     |
+| `body-ar`    | 16 / 26     |
 
 ### Numerals
 
@@ -107,20 +107,20 @@ Same scale, slightly larger sizes (Arabic glyphs visually smaller than Latin):
 
 ## Spacing scale (4-base)
 
-| Token | Value |
-|---|---|
-| `space.0` | 0 |
-| `space.1` | 4 |
-| `space.2` | 8 |
-| `space.3` | 12 |
-| `space.4` | 16 |
-| `space.5` | 20 |
-| `space.6` | 24 |
-| `space.8` | 32 |
-| `space.10` | 40 |
-| `space.12` | 48 |
-| `space.16` | 64 |
-| `space.20` | 80 |
+| Token      | Value |
+| ---------- | ----- |
+| `space.0`  | 0     |
+| `space.1`  | 4     |
+| `space.2`  | 8     |
+| `space.3`  | 12    |
+| `space.4`  | 16    |
+| `space.5`  | 20    |
+| `space.6`  | 24    |
+| `space.8`  | 32    |
+| `space.10` | 40    |
+| `space.12` | 48    |
+| `space.16` | 64    |
+| `space.20` | 80    |
 
 **Defaults:** card padding `space.4`; section gap `space.6`; screen-edge gap `space.4`.
 
@@ -128,24 +128,24 @@ Same scale, slightly larger sizes (Arabic glyphs visually smaller than Latin):
 
 ## Radius
 
-| Token | Value | Use |
-|---|---|---|
-| `radius.sm` | 6 | Chips, small buttons |
-| `radius.md` | 12 | Buttons, inputs |
-| `radius.lg` | 16 | Cards |
-| `radius.xl` | 20 | Bottom sheets, large surfaces |
-| `radius.round` | 999 | Avatars, circular buttons |
+| Token          | Value | Use                           |
+| -------------- | ----- | ----------------------------- |
+| `radius.sm`    | 6     | Chips, small buttons          |
+| `radius.md`    | 12    | Buttons, inputs               |
+| `radius.lg`    | 16    | Cards                         |
+| `radius.xl`    | 20    | Bottom sheets, large surfaces |
+| `radius.round` | 999   | Avatars, circular buttons     |
 
 ---
 
 ## Elevation / shadows
 
-| Token | Use |
-|---|---|
-| `shadow.0` | None — flat |
-| `shadow.1` | Cards at rest (subtle) |
-| `shadow.2` | Cards hover |
-| `shadow.3` | Modals, bottom sheets |
+| Token      | Use                     |
+| ---------- | ----------------------- |
+| `shadow.0` | None — flat             |
+| `shadow.1` | Cards at rest (subtle)  |
+| `shadow.2` | Cards hover             |
+| `shadow.3` | Modals, bottom sheets   |
 | `shadow.4` | Floating action buttons |
 
 Light mode uses soft shadows with low opacity; dark mode uses no shadow + subtle border.
@@ -165,13 +165,13 @@ Light mode uses soft shadows with low opacity; dark mode uses no shadow + subtle
 
 ### Buttons
 
-| Variant | Use |
-|---|---|
-| `Primary` | Main CTA. Orange filled. |
-| `Secondary` | Secondary CTA. Outline + dark text. |
-| `Ghost` | Tertiary action. Just text. |
-| `Destructive` | Red filled. Confirmation actions. |
-| `Success` | Green filled. Confirm-redeem button on cashier flow. |
+| Variant       | Use                                                  |
+| ------------- | ---------------------------------------------------- |
+| `Primary`     | Main CTA. Orange filled.                             |
+| `Secondary`   | Secondary CTA. Outline + dark text.                  |
+| `Ghost`       | Tertiary action. Just text.                          |
+| `Destructive` | Red filled. Confirmation actions.                    |
+| `Success`     | Green filled. Confirm-redeem button on cashier flow. |
 
 Sizes: `sm` (32 high), `md` (44), `lg` (56). Always min 44 high on mobile.
 
@@ -200,6 +200,7 @@ States: rest, hover, pressed, focused, loading, disabled.
 ### Badges
 
 `VoluBadge` — text or icon-only. Variants:
+
 - Verified (gold)
 - Halal-Certified (green leaf)
 - Family-Friendly (teal)
@@ -253,11 +254,11 @@ States: rest, hover, pressed, focused, loading, disabled.
 
 ### Duration tokens
 
-| Token | Value | Use |
-|---|---|---|
-| `motion.fast` | 150 ms | Hover, tap feedback |
+| Token           | Value  | Use                    |
+| --------------- | ------ | ---------------------- |
+| `motion.fast`   | 150 ms | Hover, tap feedback    |
 | `motion.medium` | 250 ms | Sheet open, navigation |
-| `motion.slow` | 400 ms | Hero transitions |
+| `motion.slow`   | 400 ms | Hero transitions       |
 
 ### Easing
 

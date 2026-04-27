@@ -118,26 +118,27 @@ CDN for static assets and image delivery (with on-the-fly resize/format conversi
 
 **Volu Core (NestJS).** The modular monolith. Every domain capability lives in a NestJS module:
 
-| Module | Owns |
-|---|---|
-| Identity | Users, merchants, admin users, sessions, RBAC, KYC documents |
-| Catalog | Categories, deals, deal versions, branches, store profiles |
-| Commerce | Cart, orders, checkout orchestration, promo codes |
-| Payments | Stripe / Tabby / Tamara / wallet integrations |
-| Coupons | Coupon issuance, QR/PIN generation, lifecycle |
-| Redemption | QR validation, PIN check, redemption recording, offline sync |
-| Wallet | Merchant ledger entries (pending / available / paid_out) |
-| Payouts | Payout requests, approvals, Stripe Connect transfers, statements |
-| Raffles | Raffle configuration, rule engine, entries, draws, winners |
-| Loyalty | Points, referrals, tier management |
-| Reviews | Ratings, moderation, merchant responses |
-| Notifications | Push, email, SMS, WhatsApp, in-app banners |
-| Ads | Meta + TikTok API integration, campaigns, reporting |
-| Invoicing | Tax invoice + commission invoice generation, e-invoice |
-| Audit | Privileged action audit log |
-| Reporting | Analytics, materialised views, export jobs |
+| Module        | Owns                                                             |
+| ------------- | ---------------------------------------------------------------- |
+| Identity      | Users, merchants, admin users, sessions, RBAC, KYC documents     |
+| Catalog       | Categories, deals, deal versions, branches, store profiles       |
+| Commerce      | Cart, orders, checkout orchestration, promo codes                |
+| Payments      | Stripe / Tabby / Tamara / wallet integrations                    |
+| Coupons       | Coupon issuance, QR/PIN generation, lifecycle                    |
+| Redemption    | QR validation, PIN check, redemption recording, offline sync     |
+| Wallet        | Merchant ledger entries (pending / available / paid_out)         |
+| Payouts       | Payout requests, approvals, Stripe Connect transfers, statements |
+| Raffles       | Raffle configuration, rule engine, entries, draws, winners       |
+| Loyalty       | Points, referrals, tier management                               |
+| Reviews       | Ratings, moderation, merchant responses                          |
+| Notifications | Push, email, SMS, WhatsApp, in-app banners                       |
+| Ads           | Meta + TikTok API integration, campaigns, reporting              |
+| Invoicing     | Tax invoice + commission invoice generation, e-invoice           |
+| Audit         | Privileged action audit log                                      |
+| Reporting     | Analytics, materialised views, export jobs                       |
 
 Each module exposes:
+
 - A **public API** (controllers): HTTP endpoints
 - An **internal API** (services): for other modules to call
 - **Domain events**: emitted for side effects
@@ -148,6 +149,7 @@ Each module exposes:
 **PostgreSQL (RDS, multi-AZ).** Primary database. One logical database; modules namespace their tables (`identity__users`, `catalog__deals`, etc.). Read replicas for analytics queries and admin dashboard reads. Automatic backups; point-in-time recovery.
 
 **Redis (ElastiCache, multi-AZ).**
+
 - Cache layer for hot reads (deal details, merchant profiles).
 - Session storage for refresh-token blacklist.
 - Rate limiting counters.
@@ -159,6 +161,7 @@ Each module exposes:
 **Cloudflare Stream / WebSocket gateway.** Realtime: live deal countdowns, redemption confirmation push to merchant dashboard.
 
 **S3 (Cloudflare R2 — S3-compatible).**
+
 - KYC documents (private, encrypted, signed-URL access)
 - Deal hero + gallery images (public, served via Cloudflare CDN)
 - Generated PDFs (invoices, statements, wallet passes)
@@ -167,6 +170,7 @@ Each module exposes:
 ### Background processing
 
 **BullMQ Workers (ECS Fargate).** Process scheduled and event-driven jobs:
+
 - Coupon expiry processing (every 5 min)
 - Coupon expiry reminders (hourly)
 - Daily Stripe reconciliation (02:00 UAE)
@@ -181,21 +185,21 @@ Auto-scaled by queue depth.
 
 ### External services
 
-| Capability | Provider |
-|---|---|
-| Card payments + payouts | Stripe (UAE entity) + Stripe Connect Express |
-| BNPL | Tabby + Tamara |
-| Wallets | Apple Pay + Google Pay (via Stripe), Careem Pay |
-| SMS | Unifonic (UAE primary), Twilio (international fallback) |
-| WhatsApp | WhatsApp Business API via Meta or 360dialog |
-| Email | Resend (primary), AWS SES (fallback) |
-| Push | Firebase Cloud Messaging + APNs |
-| Maps | Google Maps Platform |
-| KYC OCR | IDfy or Sumsub |
-| Ads | Meta Marketing API + Conversions API; TikTok Marketing API + Events API |
-| Errors | Sentry |
-| Product analytics | PostHog (self-hosted) + Mixpanel + GA4 |
-| Customer support | Intercom |
+| Capability              | Provider                                                                |
+| ----------------------- | ----------------------------------------------------------------------- |
+| Card payments + payouts | Stripe (UAE entity) + Stripe Connect Express                            |
+| BNPL                    | Tabby + Tamara                                                          |
+| Wallets                 | Apple Pay + Google Pay (via Stripe), Careem Pay                         |
+| SMS                     | Unifonic (UAE primary), Twilio (international fallback)                 |
+| WhatsApp                | WhatsApp Business API via Meta or 360dialog                             |
+| Email                   | Resend (primary), AWS SES (fallback)                                    |
+| Push                    | Firebase Cloud Messaging + APNs                                         |
+| Maps                    | Google Maps Platform                                                    |
+| KYC OCR                 | IDfy or Sumsub                                                          |
+| Ads                     | Meta Marketing API + Conversions API; TikTok Marketing API + Events API |
+| Errors                  | Sentry                                                                  |
+| Product analytics       | PostHog (self-hosted) + Mixpanel + GA4                                  |
+| Customer support        | Intercom                                                                |
 
 ---
 
@@ -253,27 +257,35 @@ Auto-scaled by queue depth.
 ## Cross-cutting concerns
 
 ### Authentication
+
 Single JWT issuance service (Identity module). Access tokens 15-min TTL, signed with rotating keypair. Public key cached at API Gateway for stateless verification. Refresh tokens are opaque, rotated on every use, bound to device fingerprint.
 
 ### Authorisation
+
 RBAC enforced in every controller via NestJS guards. Defence in depth: also enforced in service layer for sensitive operations.
 
 ### Rate limiting
+
 Edge: Cloudflare WAF rules. App: per-user and per-IP via Redis counter sliding window.
 
 ### Logging
+
 Structured JSON logs (Pino). Correlation ID propagated from edge through every service call. PII redacted at log-emit time. Shipped to AWS CloudWatch + Grafana Loki.
 
 ### Tracing
+
 OpenTelemetry instrumentation. Traces shipped to Grafana Tempo. 10% sample in production, 100% in staging.
 
 ### Metrics
+
 Prometheus-format metrics from every service. Scraped by Grafana Cloud or self-hosted Mimir. Dashboards per module.
 
 ### Error tracking
+
 Sentry SDK in mobile, backend, admin. Errors grouped, assigned, and SLA'd.
 
 ### Feature flags
+
 Service: GrowthBook (open-source) or LaunchDarkly. Flags evaluated client-side or server-side. Cached in Redis with 60-second propagation.
 
 ---
@@ -285,6 +297,7 @@ Service: GrowthBook (open-source) or LaunchDarkly. Flags evaluated client-side o
 **Compute:** ECS Fargate for stateless services (API Gateway, Volu Core, Admin Backend, Workers). Auto-scaling group based on CPU + custom metrics (queue depth for workers, request rate for APIs).
 
 **Data:**
+
 - PostgreSQL: RDS Multi-AZ primary in AZ-1, standby in AZ-2, two read replicas across AZs.
 - Redis: ElastiCache cluster mode disabled, Multi-AZ with automatic failover.
 - Meilisearch: ECS task with EBS-backed persistence; nightly snapshots to S3.
@@ -304,12 +317,12 @@ Service: GrowthBook (open-source) or LaunchDarkly. Flags evaluated client-side o
 
 When (not if) we extract a module to its own service:
 
-| Module | Trigger to extract | Why |
-|---|---|---|
-| Redemption | When merchant app sees > 1000 RPS during peak | Hot path; isolation prevents user-side incidents from impacting cashier flow |
-| Notifications | When push/email volume > 1M/day | Decouples notification delivery latency from API response time |
-| Ads | Right before Phase 4 launch | Independent deployment cadence; different team ownership |
-| Reporting | When read load impacts replicas > 50% | Read-heavy; can sit on dedicated read-only fleet |
+| Module        | Trigger to extract                            | Why                                                                          |
+| ------------- | --------------------------------------------- | ---------------------------------------------------------------------------- |
+| Redemption    | When merchant app sees > 1000 RPS during peak | Hot path; isolation prevents user-side incidents from impacting cashier flow |
+| Notifications | When push/email volume > 1M/day               | Decouples notification delivery latency from API response time               |
+| Ads           | Right before Phase 4 launch                   | Independent deployment cadence; different team ownership                     |
+| Reporting     | When read load impacts replicas > 50%         | Read-heavy; can sit on dedicated read-only fleet                             |
 
 Extractions happen via the strangler pattern: extract one endpoint at a time behind the same API surface; keep events compatible.
 

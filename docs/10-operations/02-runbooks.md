@@ -239,6 +239,7 @@ The on-call engineer's playbook. Each runbook is short, focused, and tested in d
 See [DR & Backup](../07-infrastructure/06-dr-backup.md) for full DR runbook.
 
 Quarterly drill:
+
 1. Schedule a 4-hour window in staging.
 2. Simulate region failure (terraform destroy primary).
 3. Activate DR region.

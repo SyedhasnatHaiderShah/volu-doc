@@ -25,17 +25,17 @@ How identity, sessions, and tokens work on Volu.
 
 ```json
 {
-  "sub": "01HXX...",       // user id
+  "sub": "01HXX...", // user id
   "iss": "volu-identity",
   "aud": "volu-api",
   "iat": 1716200000,
   "exp": 1716200900,
-  "jti": "01HXY...",       // unique token id
-  "role": "user",          // user | merchant_owner | merchant_branch_manager | merchant_cashier | merchant_accountant | admin
+  "jti": "01HXY...", // unique token id
+  "role": "user", // user | merchant_owner | merchant_branch_manager | merchant_cashier | merchant_accountant | admin
   "deviceId": "01HXZ...",
   "merchantId": "01HXA...", // for merchant roles only
   "scope": ["consumer:read", "consumer:write"],
-  "kid": "v2"              // signing-key id for rotation
+  "kid": "v2" // signing-key id for rotation
 }
 ```
 
@@ -115,13 +115,14 @@ How identity, sessions, and tokens work on Volu.
 
 ## OTP delivery
 
-| Provider | Use |
-|---|---|
-| **Unifonic** (UAE) | Primary for +971 numbers — best UAE deliverability |
-| **Twilio** | Fallback for Unifonic failures and international numbers |
+| Provider                  | Use                                                                 |
+| ------------------------- | ------------------------------------------------------------------- |
+| **Unifonic** (UAE)        | Primary for +971 numbers — best UAE deliverability                  |
+| **Twilio**                | Fallback for Unifonic failures and international numbers            |
 | **WhatsApp Business API** | User-opt-in alternative channel — useful for tourists with WhatsApp |
 
 OTP rules:
+
 - 6 digits, numeric.
 - Lifetime: 5 minutes.
 - Max attempts: 3 per OTP.
@@ -202,6 +203,7 @@ Admin login requires:
 3. Optional: IP allowlist for Super Admin role.
 
 Admin tokens:
+
 - Access token: 30 minutes (longer than user; admins do longer focused work).
 - Refresh token: 8 hours.
 - Idle session timeout: 30 minutes.
@@ -260,14 +262,14 @@ Revocation list cached in Redis; access tokens that haven't expired but belong t
 
 ## Rate limits
 
-| Endpoint | Limit |
-|---|---|
-| `/auth/phone/start` | 5/hour/phone, 30/hour/IP |
-| `/auth/phone/verify` | 10/hour/sessionId, 30/hour/IP |
-| `/auth/email/login` | 10/min/email, 30/min/IP |
-| `/auth/social` | 30/min/IP |
-| `/auth/refresh` | 60/min/user |
-| `/admin/auth/login` | 5/min/email, 5 failed → 15-min lockout |
+| Endpoint             | Limit                                  |
+| -------------------- | -------------------------------------- |
+| `/auth/phone/start`  | 5/hour/phone, 30/hour/IP               |
+| `/auth/phone/verify` | 10/hour/sessionId, 30/hour/IP          |
+| `/auth/email/login`  | 10/min/email, 30/min/IP                |
+| `/auth/social`       | 30/min/IP                              |
+| `/auth/refresh`      | 60/min/user                            |
+| `/admin/auth/login`  | 5/min/email, 5 failed → 15-min lockout |
 
 ---
 

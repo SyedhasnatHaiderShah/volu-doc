@@ -19,11 +19,11 @@ How Volu tests its software. Honest about trade-offs.
 
 Volu's distribution:
 
-| Layer | Backend | Mobile | Admin |
-|---|---|---|---|
-| Unit | 60% of tests | 50% | 50% |
-| Integration | 35% | 30% (widget tests) | 30% |
-| E2E | 5% | 20% (golden + Patrol) | 20% (Playwright) |
+| Layer       | Backend      | Mobile                | Admin            |
+| ----------- | ------------ | --------------------- | ---------------- |
+| Unit        | 60% of tests | 50%                   | 50%              |
+| Integration | 35%          | 30% (widget tests)    | 30%              |
+| E2E         | 5%           | 20% (golden + Patrol) | 20% (Playwright) |
 
 ---
 
@@ -34,21 +34,31 @@ Volu's distribution:
 Test pure logic in `domain/` and `application/`:
 
 ```ts
-describe('Coupon entity', () => {
-  it('rejects redemption when expired', () => {
+describe("Coupon entity", () => {
+  it("rejects redemption when expired", () => {
     const coupon = makeCoupon({ expiresAt: yesterday });
-    expect(() => coupon.assertEligibleForRedemption(ctx)).toThrow(CouponExpiredError);
+    expect(() => coupon.assertEligibleForRedemption(ctx)).toThrow(
+      CouponExpiredError,
+    );
   });
 
-  it('decrements uses_remaining on multi-use redemption', () => {
-    const coupon = makeCoupon({ usageType: 'multi_use', usesTotal: 5, usesRemaining: 5 });
+  it("decrements uses_remaining on multi-use redemption", () => {
+    const coupon = makeCoupon({
+      usageType: "multi_use",
+      usesTotal: 5,
+      usesRemaining: 5,
+    });
     coupon.markRedeemed(ctx);
     expect(coupon.usesRemaining).toBe(4);
     expect(coupon.status).toBe(CouponStatus.Active);
   });
 
-  it('marks single-use coupon redeemed after one use', () => {
-    const coupon = makeCoupon({ usageType: 'single_use', usesTotal: 1, usesRemaining: 1 });
+  it("marks single-use coupon redeemed after one use", () => {
+    const coupon = makeCoupon({
+      usageType: "single_use",
+      usesTotal: 1,
+      usesRemaining: 1,
+    });
     coupon.markRedeemed(ctx);
     expect(coupon.usesRemaining).toBe(0);
     expect(coupon.status).toBe(CouponStatus.Redeemed);
@@ -57,6 +67,7 @@ describe('Coupon entity', () => {
 ```
 
 Rules:
+
 - One assertion per test where possible.
 - Test factories (`makeCoupon`) consolidate setup.
 - Mock external dependencies; never real DB calls.
@@ -67,12 +78,12 @@ Rules:
 Real Postgres, real Redis, mocked external HTTP. Tests at the service layer:
 
 ```ts
-describe('RedemptionService', () => {
+describe("RedemptionService", () => {
   let pg: StartedPostgreSqlContainer;
   let app: INestApplication;
 
   beforeAll(async () => {
-    pg = await new PostgreSqlContainer('postgres:16').start();
+    pg = await new PostgreSqlContainer("postgres:16").start();
     app = await createTestApp({ databaseUrl: pg.getConnectionUri() });
   });
 
@@ -81,7 +92,7 @@ describe('RedemptionService', () => {
     await pg.stop();
   });
 
-  it('confirms redemption end-to-end', async () => {
+  it("confirms redemption end-to-end", async () => {
     const { coupon, cashier } = await seedActiveCoupon();
     const result = await app.get(RedemptionService).confirmRedemption({
       qrToken: signedToken(coupon),
@@ -89,10 +100,14 @@ describe('RedemptionService', () => {
       branchId: coupon.eligibleBranchIds[0],
       cashierId: cashier.id,
     });
-    expect(result.status).toBe('redeemed');
+    expect(result.status).toBe("redeemed");
 
-    const ledgerEntries = await app.get(WalletRepository).findByMerchant(coupon.merchantId);
-    expect(ledgerEntries).toContainEqual(expect.objectContaining({ type: 'pending_release' }));
+    const ledgerEntries = await app
+      .get(WalletRepository)
+      .findByMerchant(coupon.merchantId);
+    expect(ledgerEntries).toContainEqual(
+      expect.objectContaining({ type: "pending_release" }),
+    );
   });
 });
 ```
@@ -108,20 +123,20 @@ For each external dependency (Stripe, Tabby, Tamara, Unifonic), we maintain cont
 Full HTTP through the app, real DB:
 
 ```ts
-describe('POST /api/v1/orders (E2E)', () => {
-  it('creates an order with idempotency', async () => {
+describe("POST /api/v1/orders (E2E)", () => {
+  it("creates an order with idempotency", async () => {
     const idemKey = uuidv4();
 
     const r1 = await request(app.getHttpServer())
-      .post('/api/v1/orders')
-      .set('Authorization', `Bearer ${userToken}`)
-      .set('X-Idempotency-Key', idemKey)
+      .post("/api/v1/orders")
+      .set("Authorization", `Bearer ${userToken}`)
+      .set("X-Idempotency-Key", idemKey)
       .send({ items: [{ dealId: deal.id, quantity: 1 }] });
 
     const r2 = await request(app.getHttpServer())
-      .post('/api/v1/orders')
-      .set('Authorization', `Bearer ${userToken}`)
-      .set('X-Idempotency-Key', idemKey)
+      .post("/api/v1/orders")
+      .set("Authorization", `Bearer ${userToken}`)
+      .set("X-Idempotency-Key", idemKey)
       .send({ items: [{ dealId: deal.id, quantity: 1 }] });
 
     expect(r1.status).toBe(201);
@@ -211,7 +226,7 @@ Real device / emulator, against a staging backend:
 - tapOn: "Continue with phone"
 - inputText: "+971501234567"
 - tapOn: "Continue"
-- inputText: "111111"  # test OTP
+- inputText: "111111" # test OTP
 - assertVisible: "Today's Volu drops"
 ```
 
@@ -224,10 +239,10 @@ Run on CI nightly + before release.
 ### Unit + component tests (Jest + React Testing Library)
 
 ```tsx
-test('refund dialog disables submit while pending', () => {
+test("refund dialog disables submit while pending", () => {
   render(<RefundDialog order={mockOrder} />);
-  fireEvent.click(screen.getByText('Refund'));
-  expect(screen.getByRole('button', { name: 'Submitting…' })).toBeDisabled();
+  fireEvent.click(screen.getByText("Refund"));
+  expect(screen.getByRole("button", { name: "Submitting…" })).toBeDisabled();
 });
 ```
 
@@ -236,14 +251,14 @@ test('refund dialog disables submit while pending', () => {
 Critical admin flows:
 
 ```ts
-test('approve a KYC submission', async ({ page }) => {
+test("approve a KYC submission", async ({ page }) => {
   await login(page, opsAdmin);
-  await page.goto('/merchants/kyc-queue');
+  await page.goto("/merchants/kyc-queue");
   await page.click(`text=${merchant.name}`);
-  await page.click('text=Approve KYC');
-  await page.fill('textarea[name=notes]', 'All docs verified');
+  await page.click("text=Approve KYC");
+  await page.fill("textarea[name=notes]", "All docs verified");
   await page.click('button:has-text("Confirm")');
-  await expect(page.locator('text=Approved')).toBeVisible();
+  await expect(page.locator("text=Approved")).toBeVisible();
 });
 ```
 
@@ -255,14 +270,14 @@ Storybook + Chromatic catch unexpected UI changes during refactors.
 
 ## Coverage targets
 
-| Layer | Target |
-|---|---|
-| Backend domain logic | ≥ 90% |
-| Backend services | ≥ 80% |
-| Backend controllers | covered by E2E |
-| Mobile domain | ≥ 90% |
-| Mobile widgets | ≥ 60% (golden tests count) |
-| Admin components | ≥ 70% |
+| Layer                | Target                     |
+| -------------------- | -------------------------- |
+| Backend domain logic | ≥ 90%                      |
+| Backend services     | ≥ 80%                      |
+| Backend controllers  | covered by E2E             |
+| Mobile domain        | ≥ 90%                      |
+| Mobile widgets       | ≥ 60% (golden tests count) |
+| Admin components     | ≥ 70%                      |
 
 Coverage is a guide, not a goal. 100% coverage on trivial code is wasted effort; high coverage on money-handling logic is essential.
 
@@ -273,17 +288,21 @@ Coverage is a guide, not a goal. 100% coverage on trivial code is wasted effort;
 For pure logic with many edge cases (e.g., raffle rule evaluator, price math, ledger reconciliation), use property-based tests with `fast-check` (TS) or `dart_test` properties:
 
 ```ts
-import * as fc from 'fast-check';
+import * as fc from "fast-check";
 
-it('vat is always 5% of subtotal-after-promo', () => {
-  fc.assert(fc.property(
-    fc.integer({ min: 1000, max: 1_000_000 }),
-    fc.integer({ min: 0, max: 500_000 }),
-    (subtotal, promo) => {
-      const vat = computeVat({ subtotal, promo });
-      expect(vat).toBe(Math.round((subtotal - Math.min(subtotal, promo)) * 0.05));
-    },
-  ));
+it("vat is always 5% of subtotal-after-promo", () => {
+  fc.assert(
+    fc.property(
+      fc.integer({ min: 1000, max: 1_000_000 }),
+      fc.integer({ min: 0, max: 500_000 }),
+      (subtotal, promo) => {
+        const vat = computeVat({ subtotal, promo });
+        expect(vat).toBe(
+          Math.round((subtotal - Math.min(subtotal, promo)) * 0.05),
+        );
+      },
+    ),
+  );
 });
 ```
 
@@ -300,22 +319,22 @@ it('vat is always 5% of subtotal-after-promo', () => {
 ### k6 for API load tests
 
 ```js
-import http from 'k6/http';
-import { check } from 'k6';
+import http from "k6/http";
+import { check } from "k6";
 
 export const options = {
   stages: [
-    { duration: '2m', target: 100 },
-    { duration: '5m', target: 100 },
-    { duration: '1m', target: 0 },
+    { duration: "2m", target: 100 },
+    { duration: "5m", target: 100 },
+    { duration: "1m", target: 0 },
   ],
 };
 
 export default function () {
-  const res = http.get('https://api-staging.volu.ae/api/v1/deals?limit=10');
+  const res = http.get("https://api-staging.volu.ae/api/v1/deals?limit=10");
   check(res, {
-    'status 200': (r) => r.status === 200,
-    'p95 < 500ms': (r) => r.timings.duration < 500,
+    "status 200": (r) => r.status === 200,
+    "p95 < 500ms": (r) => r.timings.duration < 500,
   });
 }
 ```
@@ -348,6 +367,7 @@ Tests never use production data.
 ## Flaky tests
 
 Flaky tests are bugs. When discovered:
+
 1. Quarantine immediately (`.skip` with reason + ticket).
 2. Investigate root cause: time, async ordering, network mock, shared state.
 3. Fix the test or the code; never just retry.

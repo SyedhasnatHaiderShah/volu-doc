@@ -17,6 +17,7 @@ Detailed use cases for the most important user, merchant, and admin flows. Each 
 **Trigger:** User taps "Sign up" on welcome screen.
 
 **Main Flow:**
+
 1. User selects "Continue with phone."
 2. User enters UAE mobile number (`+971XXXXXXXXX`).
 3. System validates number format; sends OTP via Unifonic SMS.
@@ -30,6 +31,7 @@ Detailed use cases for the most important user, merchant, and admin flows. Each 
 11. User lands on Home with personalised feed.
 
 **Alternate Flows:**
+
 - **A1** (OTP not received): User taps "Resend." Cooldown of 60 seconds enforced; max 3 resends per 24h.
 - **A2** (Sign in with Apple/Google instead): User selects social provider; system auto-creates account; still required to add and verify phone before purchasing.
 - **A3** (Tourist with foreign number): System accepts international format; sends international SMS via Twilio fallback.
@@ -37,6 +39,7 @@ Detailed use cases for the most important user, merchant, and admin flows. Each 
 **Post-conditions:** User account created; user is signed in; can browse but cannot purchase until phone-verified.
 
 **Exceptions:**
+
 - **E1** (3 failed OTPs): Account temporarily locked for 15 minutes; user shown helpful error.
 - **E2** (Phone already registered): User offered "Sign in" flow instead.
 - **E3** (SMS provider failure): Fallback to Twilio; if both fail, in-app message: "We're having trouble sending your code. Please try email or contact support."
@@ -52,6 +55,7 @@ Detailed use cases for the most important user, merchant, and admin flows. Each 
 **Trigger:** User opens app or navigates to Home.
 
 **Main Flow:**
+
 1. System loads home feed: hero carousel, Today's Volu Drops (flash deals with countdown), Trending, Near You (geo-sorted), New This Week, Categories.
 2. User scrolls; system fetches additional sections lazily.
 3. User taps a category chip; system navigates to category list view.
@@ -60,6 +64,7 @@ Detailed use cases for the most important user, merchant, and admin flows. Each 
 6. System opens deal detail page with hero gallery, price block, "What you get," fine print, branches, reviews, similar deals.
 
 **Alternate Flows:**
+
 - **A1** (Search): User taps search; types a term; sees autocomplete; selects a result.
 - **A2** (Map view): User toggles to map; sees deal pins; taps a pin to see deal preview; taps preview to open detail.
 - **A3** (Anonymous browse): Unauthenticated user can browse but not purchase. Tap "Buy" → Sign-up prompt.
@@ -67,6 +72,7 @@ Detailed use cases for the most important user, merchant, and admin flows. Each 
 **Post-conditions:** User has viewed deal detail; deal-view event recorded for analytics and Conversions API.
 
 **Exceptions:**
+
 - **E1** (No deals match filters): Empty state with "Clear filters" CTA.
 - **E2** (Search service down): Fallback to category browse with notice.
 
@@ -81,6 +87,7 @@ Detailed use cases for the most important user, merchant, and admin flows. Each 
 **Trigger:** User taps "Buy" on deal detail page.
 
 **Main Flow:**
+
 1. User selects quantity (default 1; max = min(per-user cap, remaining inventory)).
 2. User taps "Add to cart" or "Buy now."
 3. System opens cart with line item, subtotal, all-in price notice.
@@ -95,6 +102,7 @@ Detailed use cases for the most important user, merchant, and admin flows. Each 
 12. User sees confirmation screen with coupons.
 
 **Alternate Flows:**
+
 - **A1** (Tabby/Tamara approved): BNPL provider returns approval; flow continues from step 10.
 - **A2** (Tabby/Tamara rejected): User returned to cart with message; can try alternate method.
 - **A3** (Promo code redemption): Step 4 — code validated server-side; discount applied; persists to checkout.
@@ -104,6 +112,7 @@ Detailed use cases for the most important user, merchant, and admin flows. Each 
 **Post-conditions:** Order in `paid` status; coupons issued and delivered; merchant balance shows pending; analytics events fired (Conversions API to Meta + TikTok).
 
 **Exceptions:**
+
 - **E1** (Inventory exhausted between cart and checkout): Order rejected with clear message; user offered similar deals.
 - **E2** (3DS failed): User returned to payment step; can retry or change method.
 - **E3** (Payment gateway timeout): Idempotency key ensures safe retry; user sees "Processing..." for up to 30 seconds before actionable error.
@@ -121,6 +130,7 @@ Detailed use cases for the most important user, merchant, and admin flows. Each 
 **Trigger:** User arrives at merchant; presents the coupon for redemption.
 
 **Main Flow:**
+
 1. User opens "My Volus" tab in app, finds the active coupon, taps to view full screen.
 2. App requests biometric unlock (if enabled) to reveal PIN.
 3. App displays large QR code and the 4-digit PIN.
@@ -136,6 +146,7 @@ Detailed use cases for the most important user, merchant, and admin flows. Each 
 13. User app refreshes coupon card to show redeemed/decremented state.
 
 **Alternate Flows:**
+
 - **A1** (Manual code entry): If camera fails, cashier taps "Enter code"; types the 10-char short code; same PIN step follows.
 - **A2** (Multi-use coupon): Step 11 decrements uses_remaining by 1 instead of full redemption; cashier sees remaining count.
 - **A3** (Offline mode): Server unreachable. Merchant app validates QR signature locally (using public key shipped in app), checks against local cache; queues redemption with cryptographic signature; syncs on reconnect.
@@ -143,6 +154,7 @@ Detailed use cases for the most important user, merchant, and admin flows. Each 
 **Post-conditions:** Coupon updated; merchant ledger credited; redemption record created; user can review merchant 24h later (post-redemption review prompt).
 
 **Exceptions:**
+
 - **E1** (Invalid QR): "Coupon not found" — cashier can rescan or enter code manually.
 - **E2** (Already redeemed, single-use): "Already redeemed at [branch] on [date]."
 - **E3** (Multi-use exhausted): "All uses used."
@@ -164,6 +176,7 @@ Detailed use cases for the most important user, merchant, and admin flows. Each 
 **Trigger:** User taps "Refund" on the coupon card.
 
 **Main Flow:**
+
 1. App shows confirmation: "Refund [Deal] for AED [amount]? This action cannot be undone."
 2. User confirms.
 3. System creates refund request via Stripe API with idempotency key.
@@ -172,12 +185,14 @@ Detailed use cases for the most important user, merchant, and admin flows. Each 
 6. User receives push + email confirmation.
 
 **Alternate Flows:**
+
 - **A1** (Outside 24h window): Self-service refund disabled. User shown "Contact support" CTA which opens in-app live chat.
 - **A2** (Already redeemed): Self-service refund disabled. User shown contact support.
 
 **Post-conditions:** Coupon refunded; user's payment method credited; merchant unaffected (since merchant wasn't yet credited).
 
 **Exceptions:**
+
 - **E1** (Stripe refund fails): User shown error; support team notified; manual refund initiated.
 
 **Related:** FR-508, FR-711.
@@ -191,6 +206,7 @@ Detailed use cases for the most important user, merchant, and admin flows. Each 
 **Trigger:** Implicit — every qualifying purchase or referral generates raffle entries automatically.
 
 **Main Flow:**
+
 1. User completes a purchase (UC-103).
 2. System evaluates raffle's rule engine against the purchase event.
 3. System creates raffle_entry records per the rules (e.g., 1 entry per AED 10 spent, capped at 200 entries per user).
@@ -207,6 +223,7 @@ Detailed use cases for the most important user, merchant, and admin flows. Each 
 9. Public Past Winners gallery updated.
 
 **Alternate Flows:**
+
 - **A1** (User opts in for free entry): Daily in-app check-in awards 1 entry (no purchase). Tracked as `source = free_entry`.
 - **A2** (Winner doesn't claim within 7 days): Automatic re-draw from same entry pool, excluding the original winner.
 - **A3** (Tiered prizes): Multiple winners selected for different tiers (Grand prize, 5 runners-up, etc.) — each drawn independently from the entry pool.
@@ -214,6 +231,7 @@ Detailed use cases for the most important user, merchant, and admin flows. Each 
 **Post-conditions:** Winner notified; entries archived; new raffle for next month auto-created if scheduled.
 
 **Exceptions:**
+
 - **E1** (Draw infrastructure issue): Draw rescheduled within 24h with public communication. Seed commitment preserved.
 - **E2** (Eligibility dispute): Admin can investigate via audit log of entries.
 
@@ -232,6 +250,7 @@ Detailed use cases for the most important user, merchant, and admin flows. Each 
 **Trigger:** User installs merchant app and taps "Sign up."
 
 **Main Flow:**
+
 1. Merchant signs up with business email + mobile.
 2. System verifies mobile via OTP (UC-101 reused).
 3. Merchant lands on "Go-Live Checklist": (a) Business profile (b) Branches (c) KYC documents (d) Bank details (e) First deal.
@@ -246,12 +265,14 @@ Detailed use cases for the most important user, merchant, and admin flows. Each 
 12. Merchant proceeds to Deal Creation (UC-202).
 
 **Alternate Flows:**
+
 - **A1** (Doc rejected): Merchant receives notification with reason; re-uploads.
 - **A2** (Sales-led onboarding): Volu Sales team initiates; merchant gets a streamlined link with pre-filled data.
 
 **Post-conditions:** Merchant approved; can publish deals; verified badge active.
 
 **Exceptions:**
+
 - **E1** (KYC SLA breach > 24 business hours): Auto-escalation to Ops Lead.
 - **E2** (Document expired during review): Merchant notified to upload fresh.
 
@@ -266,6 +287,7 @@ Detailed use cases for the most important user, merchant, and admin flows. Each 
 **Trigger:** Merchant taps "Create Deal" in merchant app.
 
 **Main Flow:**
+
 1. Merchant selects deal type: Flash or Standard.
 2. Merchant fills form:
    - Title (EN+AR), description (EN+AR)
@@ -287,6 +309,7 @@ Detailed use cases for the most important user, merchant, and admin flows. Each 
 10. Merchant sees the deal go live in their dashboard.
 
 **Alternate Flows:**
+
 - **A1** (Save as draft): Merchant can save without submitting; resume later.
 - **A2** (Auto-quality-check fails): Merchant shown specific issues to fix before resubmit.
 - **A3** (Changes requested): Merchant receives feedback; edits; resubmits.
@@ -294,6 +317,7 @@ Detailed use cases for the most important user, merchant, and admin flows. Each 
 **Post-conditions:** Deal in user-facing catalogue when live; merchant sees real-time analytics.
 
 **Exceptions:**
+
 - **E1** (Pricing rule violation: deal price > 75% of original): Form rejects submission with clear error.
 - **E2** (Trade licence expired): Cannot submit; force renewal flow.
 
@@ -314,6 +338,7 @@ Detailed use cases for the most important user, merchant, and admin flows. Each 
 **Trigger:** Merchant taps "Request Payout" in merchant wallet.
 
 **Main Flow:**
+
 1. App shows: Available balance, suggested amount (defaults to full available), bank account on file.
 2. Merchant confirms amount and IBAN.
 3. System creates payout request with status `requested`.
@@ -325,6 +350,7 @@ Detailed use cases for the most important user, merchant, and admin flows. Each 
 9. System generates PDF statement with line-item redemptions, fees, VAT, net amount.
 
 **Alternate Flows:**
+
 - **A1** (Below threshold): "Available balance must be ≥ AED 200." Merchant sees how much more is needed.
 - **A2** (Held due to dispute): Pending balance shown but available is reduced; merchant notified of held amount + reason.
 - **A3** (IBAN not yet verified): Payout request blocked; KYC update path shown.
@@ -332,6 +358,7 @@ Detailed use cases for the most important user, merchant, and admin flows. Each 
 **Post-conditions:** Funds transferred to merchant; ledger updated; PDF statement available; commission invoice from Volu issued.
 
 **Exceptions:**
+
 - **E1** (Payout rejected by finance): Reason shown; merchant can resolve and re-request.
 - **E2** (Bank transfer fails): Status → `failed`; finance investigates; reverses ledger.
 
@@ -350,6 +377,7 @@ Detailed use cases for the most important user, merchant, and admin flows. Each 
 **Trigger:** Admin opens KYC queue.
 
 **Main Flow:**
+
 1. Admin sees queue sorted by oldest pending.
 2. Admin opens a merchant case.
 3. Side-by-side view: original docs (PDF/image) and OCR-extracted fields.
@@ -360,6 +388,7 @@ Detailed use cases for the most important user, merchant, and admin flows. Each 
 8. Audit log records: admin id, action, before/after state, timestamp.
 
 **Alternate Flows:**
+
 - **A1** (Suspect document): Admin can flag for second review by Ops Lead.
 - **A2** (Bulk approve): For pre-vetted batches (e.g., chamber-of-commerce member list), admin can bulk approve.
 
@@ -376,6 +405,7 @@ Detailed use cases for the most important user, merchant, and admin flows. Each 
 **Trigger:** Admin opens deal moderation queue.
 
 **Main Flow:**
+
 1. Queue sorted by submission time (oldest first).
 2. Admin opens a deal: side-by-side preview (as user will see it) + form data + automated quality check results.
 3. Admin checks: copy is accurate and not misleading; images are appropriate; price math is reasonable; fine print is clear; merchant has no recent quality issues.
@@ -385,6 +415,7 @@ Detailed use cases for the most important user, merchant, and admin flows. Each 
 7. On approval: deal scheduled or goes live immediately based on valid-from.
 
 **Alternate Flows:**
+
 - **A1** (Featured deal): Admin can also tag as Featured during approval, scheduling it for hero carousel.
 - **A2** (Edit suggestion): Admin can suggest edits inline; merchant accepts in one click.
 
@@ -401,6 +432,7 @@ Detailed use cases for the most important user, merchant, and admin flows. Each 
 **Trigger:** Admin opens payout queue.
 
 **Main Flow:**
+
 1. Queue sorted by oldest request.
 2. Admin opens a payout: shows merchant details, requested amount, available balance, recent dispute history, KYC status, IBAN.
 3. Admin verifies: balance accurate, no active disputes freezing the funds, IBAN verified.
@@ -411,6 +443,7 @@ Detailed use cases for the most important user, merchant, and admin flows. Each 
 8. Generates payout statement PDF.
 
 **Alternate Flows:**
+
 - **A1** (Reject): Admin selects reason, e.g., "Active dispute on order #X." Merchant notified.
 - **A2** (Bulk approve): Admin can approve multiple low-risk payouts in batch.
 
@@ -426,6 +459,7 @@ Detailed use cases for the most important user, merchant, and admin flows. Each 
 **Trigger:** Admin opens Raffle Builder.
 
 **Main Flow:**
+
 1. Admin creates raffle: name (EN+AR), period (start/end), prizes (title, value, photos, tier), draw date/time, T&Cs.
 2. Admin configures entry rules in rule builder (e.g., "1 entry per AED 10 spent on Volus" + "5 bonus entries for first purchase this month" + cap "max 200 entries per user").
 3. Admin runs simulation against last month's data; sees expected entry distribution.
@@ -440,6 +474,7 @@ Detailed use cases for the most important user, merchant, and admin flows. Each 
 8. System notifies winners; updates Past Winners gallery after fulfillment.
 
 **Alternate Flows:**
+
 - **A1** (Tiered prizes): Multiple winner selections per tier; same source pool, sequential exclusion.
 - **A2** (Re-draw on no-claim): Same flow, excluding original winner.
 
@@ -456,6 +491,7 @@ Detailed use cases for the most important user, merchant, and admin flows. Each 
 **Trigger:** Admin opens a deal and clicks "Promote."
 
 **Main Flow:**
+
 1. Wizard: choose platform (Meta / TikTok / both).
 2. Choose objective: Traffic (deal views), Conversions (coupon sales), App Installs.
 3. Set budget (daily or lifetime), schedule (start/end), geo (UAE city granularity).
@@ -481,6 +517,7 @@ Detailed use cases for the most important user, merchant, and admin flows. Each 
 **Trigger:** Stripe webhook `charge.dispute.created` OR user files complaint via in-app chat.
 
 **Main Flow:**
+
 1. System receives Stripe dispute webhook; creates dispute case; freezes merchant balance equal to disputed amount.
 2. Support admin assigned; reviews order, redemption logs, merchant response, user message history.
 3. Admin uses Dispute Evidence Builder: one-click export of order details, delivery logs, redemption evidence, communication log.
@@ -490,6 +527,7 @@ Detailed use cases for the most important user, merchant, and admin flows. Each 
 7. If lost: refund finalised; merchant balance debited (if previously credited); user notified.
 
 **Alternate Flows:**
+
 - **A1** (Quality complaint, not chargeback): Support handles directly; may issue refund without Stripe dispute.
 - **A2** (Suspected fraud): Escalated; user account flagged for review; merchant flagged if pattern emerges.
 
@@ -508,6 +546,7 @@ Detailed use cases for the most important user, merchant, and admin flows. Each 
 **Trigger:** BullMQ job runs every 5 minutes.
 
 **Main Flow:**
+
 1. Job queries coupons with `status = active` AND `expires_at < NOW()`.
 2. For each: status → `expired`; merchant ledger pending row reversed; breakage revenue recognised.
 3. User notified that coupon expired.
@@ -521,6 +560,7 @@ Detailed use cases for the most important user, merchant, and admin flows. Each 
 **Trigger:** Hourly job.
 
 **Main Flow:**
+
 1. Find coupons in time windows: 7 days / 3 days / 24 hours / 3 hours before expiry.
 2. For each: send push notification per user's preferences (skip if user opted out).
 3. Notification content: "[Deal Title] expires in [X]. Don't miss it!"
@@ -533,6 +573,7 @@ Detailed use cases for the most important user, merchant, and admin flows. Each 
 **Trigger:** Daily at 02:00 UAE time.
 
 **Main Flow:**
+
 1. Job pulls Stripe payouts and balance transactions for the previous day.
 2. Compares to internal ledger entries.
 3. Discrepancies > AED 1 flagged to finance via Slack alert.
@@ -545,6 +586,7 @@ Detailed use cases for the most important user, merchant, and admin flows. Each 
 **Trigger:** Daily.
 
 **Main Flow:**
+
 1. Find merchants with KYC documents expiring in next 30 days.
 2. Send in-app + email warning to merchant.
 3. On day of expiry: merchant cannot publish new deals (existing deals still redeemable until they expire).

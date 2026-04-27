@@ -15,18 +15,18 @@ How Volu survives data loss and regional incidents.
 
 ## What we protect
 
-| Data | Backup approach | Where |
-|---|---|---|
-| PostgreSQL | RDS automated daily snapshot + WAL streaming + weekly cross-region snapshot | RDS, S3, me-south-1 |
-| PostgreSQL logical backup | Weekly `pg_dump` to S3 | S3 |
-| Redis | Daily RDB snapshot (7-day retention) | ElastiCache + S3 |
-| Meilisearch | Nightly snapshot to S3 + can be rebuilt from PostgreSQL | S3 |
-| KYC documents | S3 with versioning + cross-region replication | R2/S3 |
-| Invoices | S3 with versioning + cross-region replication | R2/S3 |
-| Container images | ECR with cross-region replication | ECR |
-| Source code | GitHub | GitHub |
-| Configuration (Terraform) | Git + state in S3 (versioned) | GitHub + S3 |
-| Secrets | Secrets Manager (versioned) | AWS |
+| Data                      | Backup approach                                                             | Where               |
+| ------------------------- | --------------------------------------------------------------------------- | ------------------- |
+| PostgreSQL                | RDS automated daily snapshot + WAL streaming + weekly cross-region snapshot | RDS, S3, me-south-1 |
+| PostgreSQL logical backup | Weekly `pg_dump` to S3                                                      | S3                  |
+| Redis                     | Daily RDB snapshot (7-day retention)                                        | ElastiCache + S3    |
+| Meilisearch               | Nightly snapshot to S3 + can be rebuilt from PostgreSQL                     | S3                  |
+| KYC documents             | S3 with versioning + cross-region replication                               | R2/S3               |
+| Invoices                  | S3 with versioning + cross-region replication                               | R2/S3               |
+| Container images          | ECR with cross-region replication                                           | ECR                 |
+| Source code               | GitHub                                                                      | GitHub              |
+| Configuration (Terraform) | Git + state in S3 (versioned)                                               | GitHub + S3         |
+| Secrets                   | Secrets Manager (versioned)                                                 | AWS                 |
 
 ---
 
@@ -64,11 +64,13 @@ How Volu survives data loss and regional incidents.
 ## Redis — recovery
 
 Redis is mostly cache + session/queue state. Loss tolerable for:
+
 - Caches: rebuilt from PostgreSQL.
 - Sessions: users re-login.
 - Rate-limit counters: reset (small disruption).
 
 What we protect:
+
 - BullMQ queue state: jobs in flight could be lost. Mitigation: outbox pattern (durable in PostgreSQL) ensures we can re-enqueue.
 - Session revocation list: rebuildable from `identity__sessions`.
 
@@ -79,6 +81,7 @@ Daily snapshots used for "I'd rather not rebuild from scratch" scenarios.
 ## Meilisearch — recovery
 
 Meilisearch is fully derivable from PostgreSQL. In recovery:
+
 1. Restore from latest nightly snapshot (fast: ~minutes).
 2. OR, full reindex from PostgreSQL (~20–40 min for 10K deals + 600 merchants).
 
@@ -95,6 +98,7 @@ Meilisearch is fully derivable from PostgreSQL. In recovery:
 ## Disaster scenarios
 
 ### Scenario 1: AZ failure
+
 - **What:** Single AZ goes down.
 - **Impact:** Minimal. Multi-AZ services failover automatically.
 - **Recovery:** Automatic; verify all services healthy on remaining AZs.
@@ -102,6 +106,7 @@ Meilisearch is fully derivable from PostgreSQL. In recovery:
 - **RPO:** 0 (synchronous replication).
 
 ### Scenario 2: Region failure
+
 - **What:** All of `me-central-1` unavailable.
 - **Impact:** Full outage.
 - **Recovery:**
@@ -117,6 +122,7 @@ Meilisearch is fully derivable from PostgreSQL. In recovery:
 We'll add continuous cross-region WAL once monthly cost is justified by user volume.
 
 ### Scenario 3: Logical data corruption
+
 - **What:** A bad migration or bug corrupts data.
 - **Recovery:**
   1. Identify scope and time of corruption.
@@ -127,6 +133,7 @@ We'll add continuous cross-region WAL once monthly cost is justified by user vol
 - **RPO:** 0 if PITR captures the right point.
 
 ### Scenario 4: Ransomware / malicious insider
+
 - **What:** Someone deletes critical data.
 - **Recovery:**
   1. Engage incident response (SEV-1).
@@ -135,6 +142,7 @@ We'll add continuous cross-region WAL once monthly cost is justified by user vol
   4. Forensic analysis; potential law enforcement.
 
 ### Scenario 5: Backup itself corrupted
+
 - **What:** Latest snapshot fails to restore.
 - **Recovery:**
   1. Try previous snapshot.

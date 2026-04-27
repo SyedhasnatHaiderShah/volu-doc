@@ -11,6 +11,7 @@ How modules communicate via domain events, the catalogue of events, and the rule
 Events let one module react to changes in another without tight coupling. When a coupon is purchased, the Coupons module doesn't need to know about Notifications, Raffles, Wallet, Ads — it just emits `coupon.purchased`, and each interested module subscribes.
 
 Benefits:
+
 - **Decoupling**: modules added/removed without changing the producer.
 - **Auditability**: every event is a stored fact.
 - **Reliability**: events survive restart and retry.
@@ -32,6 +33,7 @@ Used when the side effect must happen as part of the same logical operation and 
 - Failure of subscriber = failure of producer (transaction rolls back).
 
 **Examples:**
+
 - Audit log entry on every privileged action.
 - Inventory decrement when an order is created.
 
@@ -44,6 +46,7 @@ Used for everything else. Subscribers are decoupled from the request lifecycle.
 - At-least-once delivery; subscribers must be idempotent.
 
 **Examples:**
+
 - Send push notification when a coupon is purchased.
 - Update Meilisearch index when a deal is approved.
 - Forward conversion event to Meta + TikTok.
@@ -90,9 +93,9 @@ export class OrderService {
       await tx.outbox_events.create({
         data: {
           id: uuidv7(),
-          event_name: 'coupon.purchased',
+          event_name: "coupon.purchased",
           event_version: 1,
-          payload: { orderId: order.id, couponIds: coupons.map(c => c.id) },
+          payload: { orderId: order.id, couponIds: coupons.map((c) => c.id) },
           occurred_at: new Date(),
         },
       });
@@ -111,7 +114,7 @@ A small worker polls every 1 second:
 async function publishOutbox() {
   const batch = await prisma.outbox_events.findMany({
     where: { published_at: null, publish_attempts: { lt: 5 } },
-    orderBy: { created_at: 'asc' },
+    orderBy: { created_at: "asc" },
     take: 100,
   });
 
@@ -203,81 +206,89 @@ For backward-compatible additions (new optional fields), no version bump.
 ## Event catalogue (with subscribers)
 
 ### `coupon.purchased`
+
 **Producer:** Commerce module on Stripe webhook → order paid.
 
-| Subscriber | Action |
-|---|---|
-| Coupons module | Generate coupon records, QR tokens, PINs |
-| Wallet module | Debit merchant `pending` ledger |
-| Notifications module | Send push + email + in-app with coupons |
-| Raffles module | Evaluate raffle rules, create entries |
-| Loyalty module | Award loyalty points (issued, redeemed on success) |
-| Ads module | Forward Purchase event to Meta + TikTok APIs |
-| Reporting module | Update materialised views for dashboards |
-| Ads module (referral) | Track referral attribution |
+| Subscriber            | Action                                             |
+| --------------------- | -------------------------------------------------- |
+| Coupons module        | Generate coupon records, QR tokens, PINs           |
+| Wallet module         | Debit merchant `pending` ledger                    |
+| Notifications module  | Send push + email + in-app with coupons            |
+| Raffles module        | Evaluate raffle rules, create entries              |
+| Loyalty module        | Award loyalty points (issued, redeemed on success) |
+| Ads module            | Forward Purchase event to Meta + TikTok APIs       |
+| Reporting module      | Update materialised views for dashboards           |
+| Ads module (referral) | Track referral attribution                         |
 
 ### `coupon.redeemed`
+
 **Producer:** Redemption module on successful PIN validation.
 
-| Subscriber | Action |
-|---|---|
-| Wallet module | Schedule `pending` → `available` transition after hold period |
-| Notifications module | Push to user (post-redemption review prompt at +24h) |
-| Notifications module | Add to merchant's daily redemption summary |
-| Reviews module | Schedule review-prompt job for +24h |
-| Reporting module | Update redemption metrics |
+| Subscriber           | Action                                                        |
+| -------------------- | ------------------------------------------------------------- |
+| Wallet module        | Schedule `pending` → `available` transition after hold period |
+| Notifications module | Push to user (post-redemption review prompt at +24h)          |
+| Notifications module | Add to merchant's daily redemption summary                    |
+| Reviews module       | Schedule review-prompt job for +24h                           |
+| Reporting module     | Update redemption metrics                                     |
 
 ### `coupon.expired`
+
 **Producer:** Coupon expiry worker (scheduled job).
 
-| Subscriber | Action |
-|---|---|
-| Wallet module | Reverse merchant `pending` row; recognise breakage revenue |
-| Notifications module | Send "expired" notification |
-| Reporting module | Update breakage metrics |
+| Subscriber           | Action                                                     |
+| -------------------- | ---------------------------------------------------------- |
+| Wallet module        | Reverse merchant `pending` row; recognise breakage revenue |
+| Notifications module | Send "expired" notification                                |
+| Reporting module     | Update breakage metrics                                    |
 
 ### `merchant.kyc_approved`
+
 **Producer:** Identity module on admin approval.
 
-| Subscriber | Action |
-|---|---|
-| Notifications module | Email + in-app: "You're live!" |
-| Catalog module | Mark merchant eligible to publish deals |
+| Subscriber           | Action                                  |
+| -------------------- | --------------------------------------- |
+| Notifications module | Email + in-app: "You're live!"          |
+| Catalog module       | Mark merchant eligible to publish deals |
 
 ### `deal.approved`
+
 **Producer:** Catalog module on admin approval.
 
-| Subscriber | Action |
-|---|---|
-| Search module | Index deal in Meilisearch |
+| Subscriber           | Action                                         |
+| -------------------- | ---------------------------------------------- |
+| Search module        | Index deal in Meilisearch                      |
 | Notifications module | Notify merchant; notify followers if scheduled |
-| Ads module | Make deal available for "Promote this" |
+| Ads module           | Make deal available for "Promote this"         |
 
 ### `deal.expired`
+
 **Producer:** Deal lifecycle worker.
 
-| Subscriber | Action |
-|---|---|
-| Search module | Remove from Meilisearch |
+| Subscriber           | Action                      |
+| -------------------- | --------------------------- |
+| Search module        | Remove from Meilisearch     |
 | Notifications module | Notify followers (optional) |
 
 ### `payout.paid`
+
 **Producer:** Payouts module on bank confirmation.
 
-| Subscriber | Action |
-|---|---|
-| Invoicing module | Generate PDF statement |
-| Invoicing module | Issue commission invoice (Volu → merchant) |
-| Notifications module | Notify merchant of payout |
+| Subscriber           | Action                                     |
+| -------------------- | ------------------------------------------ |
+| Invoicing module     | Generate PDF statement                     |
+| Invoicing module     | Issue commission invoice (Volu → merchant) |
+| Notifications module | Notify merchant of payout                  |
 
 ### `chargeback.received`
+
 **Producer:** Payments module on Stripe `charge.dispute.created` webhook.
 
-| Subscriber | Action |
-|---|---|
-| Wallet module | Freeze merchant balance equal to disputed amount |
-| Notifications module | Alert admin via Slack + in-app |
-| Audit module | Open dispute case |
+| Subscriber           | Action                                           |
+| -------------------- | ------------------------------------------------ |
+| Wallet module        | Freeze merchant balance equal to disputed amount |
+| Notifications module | Alert admin via Slack + in-app                   |
+| Audit module         | Open dispute case                                |
 
 (Full catalogue maintained in code at `packages/events/catalog.ts`.)
 

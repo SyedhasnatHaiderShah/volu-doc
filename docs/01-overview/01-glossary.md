@@ -162,7 +162,7 @@ Every domain term used across the platform. If a word appears in code, UI copy, 
 
 ## S
 
-**SKILL.** See "Deal."  (Used in early docs; migrating away from this term.)
+**SKILL.** See "Deal." (Used in early docs; migrating away from this term.)
 
 **Standard Deal.** A deal available for purchase anytime within its validity window, without flash-style scarcity. Contrasted with Flash Deal.
 

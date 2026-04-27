@@ -19,17 +19,21 @@ The cardinal rule: **a single deploy never combines a destructive schema change 
 Schema changes are split into two (or three) deploys:
 
 ### Stage 1 — Expand
+
 Add new structures alongside the old. Old code keeps working.
 
 Examples:
+
 - Add a new column with a default → `ADD COLUMN status TEXT NOT NULL DEFAULT 'pending'`
 - Add a new index → `CREATE INDEX CONCURRENTLY ...`
 - Add a new table.
 
 ### Stage 2 — Migrate (data + code)
+
 Backfill data into the new structure. Update application to write to both old and new (dual-write) or read from new with fallback.
 
 ### Stage 3 — Contract
+
 Remove the old structure once nothing reads it. Drop columns, drop tables, drop indexes.
 
 **This means most schema changes are split across at least two PRs and at least one release.** The discipline is annoying but it's the only way to deploy without downtime.
@@ -39,11 +43,13 @@ Remove the old structure once nothing reads it. Drop columns, drop tables, drop 
 ## Concrete rules
 
 ### Adding a column
+
 - Always add as `NULLABLE` first, OR with a `DEFAULT` value.
 - Backfill in a separate step if needed.
 - If the column will become `NOT NULL`: add nullable → backfill → migrate to NOT NULL.
 
 ### Renaming a column
+
 - Add new column with new name.
 - Dual-write to both columns for one release.
 - Backfill old data.
@@ -51,37 +57,45 @@ Remove the old structure once nothing reads it. Drop columns, drop tables, drop 
 - Drop old column in next release.
 
 ### Dropping a column
+
 - Confirm no code reads or writes it (search the entire codebase).
 - Confirm no DB-level dependents (views, foreign keys, triggers).
 - Drop in a separate migration from the code change that stops using it.
 
 ### Adding an index
+
 - Use `CREATE INDEX CONCURRENTLY` to avoid table locks.
 - Tested on staging with production-like data first.
 
 ### Dropping an index
+
 - Use `DROP INDEX CONCURRENTLY`.
 - Confirm via `pg_stat_user_indexes` that it hasn't been used in 30+ days.
 
 ### Renaming a table
+
 - Same as column rename: create new, dual-write, switch reads, drop old.
 - Heavy operation on large tables; consider whether the rename is truly necessary.
 
 ### Changing a column type
+
 - Almost always: add new column with new type, backfill, switch reads, drop old.
 - Direct type change (`ALTER COLUMN ... TYPE ...`) is acceptable only for trivial cases like `VARCHAR(50) → VARCHAR(100)`.
 
 ### Adding a foreign key constraint
+
 - On a large existing table, add as `NOT VALID` first (no immediate scan).
 - Then `VALIDATE CONSTRAINT` separately.
 
 ### Adding a `NOT NULL` constraint to existing column
+
 - Use `CHECK (column IS NOT NULL) NOT VALID` first.
 - Backfill any nulls.
 - `VALIDATE CONSTRAINT`.
 - Convert to true `NOT NULL` in a later migration.
 
 ### Enums
+
 - Adding values: `ALTER TYPE ... ADD VALUE 'new'` (Postgres-native, fast).
 - Removing values: not safe — convert column to TEXT, drop enum, recreate without the value, switch back. Avoid where possible.
 
@@ -122,7 +136,7 @@ async function backfillCouponMerchantId() {
         merchant_id: null,
         ...(lastId ? { id: { gt: lastId } } : {}),
       },
-      orderBy: { id: 'asc' },
+      orderBy: { id: "asc" },
       take: batchSize,
       include: { deal: { select: { merchant_id: true } } },
     });
@@ -130,7 +144,7 @@ async function backfillCouponMerchantId() {
     if (rows.length === 0) break;
 
     await prisma.$transaction(
-      rows.map(c =>
+      rows.map((c) =>
         prisma.coupons__coupons.update({
           where: { id: c.id },
           data: { merchant_id: c.deal.merchant_id },
@@ -186,6 +200,7 @@ Post-deploy verification
 ```
 
 If production migration fails:
+
 - The deploy is aborted.
 - Application keeps running on the previous schema.
 - Investigation begins; manual intervention may be required.
@@ -194,17 +209,17 @@ If production migration fails:
 
 ## Data retention policies
 
-| Data | Retention |
-|---|---|
-| User accounts (soft-deleted) | 30 days then hard-delete |
-| Financial records (orders, ledger, invoices) | 7 years (UAE tax law) |
-| KYC documents | 7 years post-merchant offboarding |
-| Audit logs | 12 months hot, then archived to cold storage; 7-year total |
-| Notifications | 90 days |
-| `outbox_events` (published) | 30 days |
-| `inbound_webhooks` | 30 days |
-| Session records | 90 days post-revocation |
-| Search indexes (Meilisearch) | Stateless, rebuilt from primary |
+| Data                                         | Retention                                                  |
+| -------------------------------------------- | ---------------------------------------------------------- |
+| User accounts (soft-deleted)                 | 30 days then hard-delete                                   |
+| Financial records (orders, ledger, invoices) | 7 years (UAE tax law)                                      |
+| KYC documents                                | 7 years post-merchant offboarding                          |
+| Audit logs                                   | 12 months hot, then archived to cold storage; 7-year total |
+| Notifications                                | 90 days                                                    |
+| `outbox_events` (published)                  | 30 days                                                    |
+| `inbound_webhooks`                           | 30 days                                                    |
+| Session records                              | 90 days post-revocation                                    |
+| Search indexes (Meilisearch)                 | Stateless, rebuilt from primary                            |
 
 Retention enforced by scheduled jobs.
 

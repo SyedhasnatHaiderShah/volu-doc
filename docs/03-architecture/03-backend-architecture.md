@@ -83,17 +83,20 @@ volu-backend/
 ## Module boundaries
 
 ### What's allowed across modules
+
 - One module's controller or service can call **another module's service** through a public interface (export from the module).
 - Modules emit **domain events** that other modules subscribe to.
 - Cross-cutting concerns (logging, auth, config) are in `shared/`.
 
 ### What's forbidden across modules
+
 - ❌ Reading another module's database tables directly. (Only the owning module touches its tables.)
 - ❌ Importing internal services / repositories of another module.
 - ❌ Modifying another module's database state synchronously without going through its public service.
 
 ### Why this discipline matters
-This is what makes the monolith *modular*. When we extract a module to its own service later (e.g., Redemption to handle high RPS independently), the work is mechanical: replace direct service calls with HTTP calls, replace in-process events with Redis Stream events. The business logic doesn't change.
+
+This is what makes the monolith _modular_. When we extract a module to its own service later (e.g., Redemption to handle high RPS independently), the work is mechanical: replace direct service calls with HTTP calls, replace in-process events with Redis Stream events. The business logic doesn't change.
 
 ---
 
@@ -146,12 +149,12 @@ domain/        ← entities, value objects, pure business rules
 
 ```typescript
 // redemption.controller.ts
-@Controller('redemptions')
+@Controller("redemptions")
 @UseGuards(MerchantJwtGuard)
 export class RedemptionController {
   constructor(private readonly redemptionService: RedemptionService) {}
 
-  @Post('validate')
+  @Post("validate")
   @UseInterceptors(IdempotencyInterceptor)
   async validate(
     @CurrentUser() cashier: AuthenticatedMerchantUser,
@@ -163,7 +166,7 @@ export class RedemptionController {
     });
   }
 
-  @Post('confirm')
+  @Post("confirm")
   @UseInterceptors(IdempotencyInterceptor)
   async confirm(
     @CurrentUser() cashier: AuthenticatedMerchantUser,
@@ -192,13 +195,17 @@ export class RedemptionService {
     private readonly clock: Clock,
   ) {}
 
-  async confirmRedemption(input: ConfirmRedemptionInput): Promise<RedemptionConfirmedResponse> {
+  async confirmRedemption(
+    input: ConfirmRedemptionInput,
+  ): Promise<RedemptionConfirmedResponse> {
     // 1. Validate signed QR token
     const payload = this.tokenSigner.verify(input.qrToken);
     if (!payload.ok) throw new InvalidQrTokenError();
 
     // 2. Load coupon
-    const coupon = await this.couponRepo.findByIdForUpdate(payload.value.couponId);
+    const coupon = await this.couponRepo.findByIdForUpdate(
+      payload.value.couponId,
+    );
     if (!coupon) throw new CouponNotFoundError();
 
     // 3. Domain rule checks (pure logic in entity)
@@ -210,7 +217,10 @@ export class RedemptionService {
 
     // 4. Atomic state change in transaction
     const redemption = await this.prisma.$transaction(async (tx) => {
-      coupon.markRedeemed({ branchId: input.branchId, cashierId: input.cashierId });
+      coupon.markRedeemed({
+        branchId: input.branchId,
+        cashierId: input.cashierId,
+      });
       await this.couponRepo.save(coupon, tx);
       const redemption = Redemption.create({
         couponId: coupon.id,
@@ -224,15 +234,17 @@ export class RedemptionService {
     });
 
     // 5. Emit event for side effects
-    await this.eventBus.publish(new CouponRedeemedEvent({
-      couponId: coupon.id,
-      orderId: coupon.orderId,
-      merchantId: coupon.merchantId,
-      branchId: input.branchId,
-      cashierId: input.cashierId,
-      payoutAmount: coupon.payoutAmount,
-      at: redemption.at,
-    }));
+    await this.eventBus.publish(
+      new CouponRedeemedEvent({
+        couponId: coupon.id,
+        orderId: coupon.orderId,
+        merchantId: coupon.merchantId,
+        branchId: input.branchId,
+        cashierId: input.cashierId,
+        payoutAmount: coupon.payoutAmount,
+        at: redemption.at,
+      }),
+    );
 
     // 6. Return response
     return RedemptionConfirmedResponse.from(coupon, redemption);
@@ -245,7 +257,11 @@ export class RedemptionService {
 export class Coupon {
   // ... fields ...
 
-  assertEligibleForRedemption(ctx: { branchId: string; now: Date; pin: string }): void {
+  assertEligibleForRedemption(ctx: {
+    branchId: string;
+    now: Date;
+    pin: string;
+  }): void {
     if (this.status !== CouponStatus.Active) {
       throw new CouponNotActiveError(this.status);
     }
@@ -274,7 +290,10 @@ export class Coupon {
   markRedeemed(ctx: { branchId: string; cashierId: string }): void {
     this.usesRemaining -= 1;
     if (this.usesRemaining === 0) {
-      this.status = this.usageType === UsageType.SingleUse ? CouponStatus.Redeemed : CouponStatus.UsedUp;
+      this.status =
+        this.usageType === UsageType.SingleUse
+          ? CouponStatus.Redeemed
+          : CouponStatus.UsedUp;
     }
     this.lastRedeemedAt = new Date();
   }
@@ -312,7 +331,7 @@ We use Prisma's interactive transactions for any multi-step state change. Rules:
 
 Two-tier event system:
 
-1. **In-process events** (synchronous within the same request): NestJS's built-in event emitter. Used for fire-and-forget side effects that *must* happen before the request returns (e.g., audit log).
+1. **In-process events** (synchronous within the same request): NestJS's built-in event emitter. Used for fire-and-forget side effects that _must_ happen before the request returns (e.g., audit log).
 2. **Out-of-process events** (asynchronous): Redis Streams + BullMQ. Subscribers run in worker processes. Used for everything else (notifications, search index updates, ad event forwarding).
 
 All events are typed:
@@ -326,7 +345,7 @@ abstract class DomainEvent {
 }
 
 class CouponRedeemedEvent extends DomainEvent {
-  readonly eventName = 'coupon.redeemed';
+  readonly eventName = "coupon.redeemed";
   readonly version = 1;
 
   constructor(
@@ -356,7 +375,10 @@ Strongly-typed config loaded once at bootstrap from environment variables:
 ```typescript
 @Injectable()
 export class AppConfig {
-  @IsString() @IsNotEmpty() readonly NODE_ENV: 'development' | 'staging' | 'production';
+  @IsString() @IsNotEmpty() readonly NODE_ENV:
+    | "development"
+    | "staging"
+    | "production";
   @IsString() @IsNotEmpty() readonly DATABASE_URL: string;
   @IsString() @IsNotEmpty() readonly REDIS_URL: string;
   @IsString() @IsNotEmpty() readonly JWT_PRIVATE_KEY: string;
@@ -393,7 +415,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         error: {
           code: exception.code,
           message: exception.message,
-          messageAr: this.translate(exception.code, 'ar'),
+          messageAr: this.translate(exception.code, "ar"),
           context: exception.context,
         },
         traceId: request.id,
@@ -401,21 +423,27 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     }
 
     if (exception instanceof InfrastructureError) {
-      this.logger.warn({ exception, traceId: request.id }, 'Infrastructure error');
+      this.logger.warn(
+        { exception, traceId: request.id },
+        "Infrastructure error",
+      );
       return response.status(exception.httpStatus).json({
         error: {
           code: exception.code,
-          message: 'Service temporarily unavailable. Please try again.',
+          message: "Service temporarily unavailable. Please try again.",
         },
         traceId: request.id,
       });
     }
 
     // Unknown
-    this.logger.error({ exception, traceId: request.id }, 'Unhandled error');
+    this.logger.error({ exception, traceId: request.id }, "Unhandled error");
     Sentry.captureException(exception);
     return response.status(500).json({
-      error: { code: 'INTERNAL_ERROR', message: 'Something went wrong. We have been notified.' },
+      error: {
+        code: "INTERNAL_ERROR",
+        message: "Something went wrong. We have been notified.",
+      },
       traceId: request.id,
     });
   }
@@ -430,22 +458,22 @@ Error code catalogue lives in `shared/errors/codes.ts`. Every code has EN + AR c
 
 ### Read patterns
 
-| Pattern | Use case | Implementation |
-|---|---|---|
-| Direct read by primary key | Hot lookup | Prisma; cached in Redis with TTL 5 min for hot entities |
-| Indexed read (e.g., user's orders) | List view | Prisma; backed by composite indexes |
-| Aggregation (e.g., merchant dashboard KPIs) | Dashboards | Materialised views refreshed every minute |
-| Complex analytics | Admin reports | Read replica, written in raw SQL or via reporting service |
+| Pattern                                     | Use case      | Implementation                                            |
+| ------------------------------------------- | ------------- | --------------------------------------------------------- |
+| Direct read by primary key                  | Hot lookup    | Prisma; cached in Redis with TTL 5 min for hot entities   |
+| Indexed read (e.g., user's orders)          | List view     | Prisma; backed by composite indexes                       |
+| Aggregation (e.g., merchant dashboard KPIs) | Dashboards    | Materialised views refreshed every minute                 |
+| Complex analytics                           | Admin reports | Read replica, written in raw SQL or via reporting service |
 
 ### Write patterns
 
-| Pattern | Use case | Implementation |
-|---|---|---|
-| Single-row insert/update | Most writes | Prisma standard methods |
-| Multi-row transaction | Order + coupons + ledger | Prisma `$transaction` |
-| Optimistic concurrency | Inventory decrement | `UPDATE ... WHERE inventory_left > 0 RETURNING` |
-| Pessimistic locking | Coupon redemption | `SELECT ... FOR UPDATE` |
-| Write-and-emit-event | Most domain operations | Outbox pattern (write event row in same TX, publish from outbox worker) |
+| Pattern                  | Use case                 | Implementation                                                          |
+| ------------------------ | ------------------------ | ----------------------------------------------------------------------- |
+| Single-row insert/update | Most writes              | Prisma standard methods                                                 |
+| Multi-row transaction    | Order + coupons + ledger | Prisma `$transaction`                                                   |
+| Optimistic concurrency   | Inventory decrement      | `UPDATE ... WHERE inventory_left > 0 RETURNING`                         |
+| Pessimistic locking      | Coupon redemption        | `SELECT ... FOR UPDATE`                                                 |
+| Write-and-emit-event     | Most domain operations   | Outbox pattern (write event row in same TX, publish from outbox worker) |
 
 ### Outbox pattern (for reliable event publication)
 
@@ -460,14 +488,14 @@ A separate `OutboxWorker` polls the outbox every second, publishes to Redis Stre
 
 ## Caching strategy
 
-| Cache key | TTL | Invalidation |
-|---|---|---|
-| `deal:{id}` | 5 min | Event-driven on deal update |
-| `merchant:{id}` | 10 min | Event-driven on merchant profile change |
-| `category:tree` | 1 hour | Manual on admin change |
-| `user:permissions:{id}` | 5 min | Event-driven on role change |
-| `feature_flags` | 60s | Pub/sub broadcast |
-| `meilisearch:results:{query_hash}` | 1 min | Time-based only |
+| Cache key                          | TTL    | Invalidation                            |
+| ---------------------------------- | ------ | --------------------------------------- |
+| `deal:{id}`                        | 5 min  | Event-driven on deal update             |
+| `merchant:{id}`                    | 10 min | Event-driven on merchant profile change |
+| `category:tree`                    | 1 hour | Manual on admin change                  |
+| `user:permissions:{id}`            | 5 min  | Event-driven on role change             |
+| `feature_flags`                    | 60s    | Pub/sub broadcast                       |
+| `meilisearch:results:{query_hash}` | 1 min  | Time-based only                         |
 
 Cache layer: Redis. Library: a thin wrapper around `ioredis` with consistent key prefixing, JSON serialisation, and stale-while-revalidate semantics.
 
@@ -477,18 +505,18 @@ Cache layer: Redis. Library: a thin wrapper around `ioredis` with consistent key
 
 Workers are separate ECS Fargate tasks consuming BullMQ queues. Each worker is single-purpose:
 
-| Worker | Trigger | Concurrency |
-|---|---|---|
-| coupon-expiry | Cron every 5 min | 1 |
-| expiry-reminders | Cron hourly | 1 |
-| stripe-reconcile | Cron daily 02:00 | 1 |
-| notification-delivery | Event-driven | Auto-scale on queue depth |
-| search-index | Event-driven | 4 |
-| image-processing | Event-driven | 2 |
-| ads-event-forward | Event-driven | 4 |
-| outbox-publisher | Continuous polling | 2 |
-| document-expiry-check | Cron daily | 1 |
-| raffle-draw | Cron at draw times | 1 |
+| Worker                | Trigger            | Concurrency               |
+| --------------------- | ------------------ | ------------------------- |
+| coupon-expiry         | Cron every 5 min   | 1                         |
+| expiry-reminders      | Cron hourly        | 1                         |
+| stripe-reconcile      | Cron daily 02:00   | 1                         |
+| notification-delivery | Event-driven       | Auto-scale on queue depth |
+| search-index          | Event-driven       | 4                         |
+| image-processing      | Event-driven       | 2                         |
+| ads-event-forward     | Event-driven       | 4                         |
+| outbox-publisher      | Continuous polling | 2                         |
+| document-expiry-check | Cron daily         | 1                         |
+| raffle-draw           | Cron at draw times | 1                         |
 
 Each worker has graceful shutdown (in-flight jobs allowed to finish), idempotent job processing (replays don't double-effect), and dead-letter queue for failed jobs after 5 retries with exponential backoff.
 
@@ -525,17 +553,19 @@ Detailed in [05-api/04-webhooks.md](../05-api/04-webhooks.md).
 ```typescript
 @Controller()
 export class HealthController {
-  @Get('health')   // liveness — is the process alive?
-  health() { return { status: 'ok' }; }
+  @Get("health") // liveness — is the process alive?
+  health() {
+    return { status: "ok" };
+  }
 
-  @Get('ready')    // readiness — can it serve traffic?
+  @Get("ready") // readiness — can it serve traffic?
   async ready() {
     await Promise.all([
       this.prisma.$queryRaw`SELECT 1`,
       this.redis.ping(),
       this.meilisearch.health(),
     ]);
-    return { status: 'ready' };
+    return { status: "ready" };
   }
 }
 ```

@@ -14,14 +14,14 @@ Volu is intentionally designed to qualify for **PCI SAQ-A** — the lightest PCI
 
 How we achieve this:
 
-| Step | Implementation |
-|---|---|
+| Step                                | Implementation                                                                                                                                       |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Card data never reaches our backend | Stripe Elements (web) and Stripe Mobile SDKs render the card form; PAN goes directly from the user's device to Stripe's PCI-DSS-Level-1 environment. |
-| Tokenisation | Stripe returns a payment-method ID; only this token is sent to Volu. |
-| No PAN in storage, logs, or backups | Audited via grep + DLP scanners on log streams; storage schemas reviewed for any field that could hold PAN. |
-| No PAN in metadata | Stripe `metadata` fields populated only with our own identifiers (order ID, user ID); never card data. |
-| Secure transmission to Stripe | Stripe's domain hosted directly in the iframe / SDK; HTTPS enforced. |
-| Vulnerability management | Quarterly external scans (ASV); covered under our Snyk + Dependabot pipeline. |
+| Tokenisation                        | Stripe returns a payment-method ID; only this token is sent to Volu.                                                                                 |
+| No PAN in storage, logs, or backups | Audited via grep + DLP scanners on log streams; storage schemas reviewed for any field that could hold PAN.                                          |
+| No PAN in metadata                  | Stripe `metadata` fields populated only with our own identifiers (order ID, user ID); never card data.                                               |
+| Secure transmission to Stripe       | Stripe's domain hosted directly in the iframe / SDK; HTTPS enforced.                                                                                 |
+| Vulnerability management            | Quarterly external scans (ASV); covered under our Snyk + Dependabot pipeline.                                                                        |
 
 ### Controls explicitly required
 
@@ -63,12 +63,12 @@ The UAE Personal Data Protection Law (Federal Decree-Law No. 45 of 2021) governs
 
 We rely on:
 
-| Basis | Use case |
-|---|---|
-| Contract | Processing user data to deliver coupons, payments, and support |
-| Consent | Marketing communications, optional features (e.g., location-based recommendations) |
-| Legal obligation | Tax records, KYC retention, fraud investigation |
-| Legitimate interest | Security analytics, fraud prevention (with clear notice) |
+| Basis               | Use case                                                                           |
+| ------------------- | ---------------------------------------------------------------------------------- |
+| Contract            | Processing user data to deliver coupons, payments, and support                     |
+| Consent             | Marketing communications, optional features (e.g., location-based recommendations) |
+| Legal obligation    | Tax records, KYC retention, fraud investigation                                    |
+| Legitimate interest | Security analytics, fraud prevention (with clear notice)                           |
 
 ### Required notices
 
@@ -78,15 +78,15 @@ We rely on:
 
 ### Data subject rights — implementation
 
-| Right | Implementation |
-|---|---|
-| Right to be informed | Privacy Notice + just-in-time disclosures at point of data collection |
-| Right of access | `POST /users/me/data-export` — JSON export delivered within 24 hours via signed URL (72h TTL) |
-| Right to rectification | User can edit profile fields directly; for fields they can't edit (e.g., DOB after verification), support ticket |
-| Right to erasure | `DELETE /users/me` — soft-delete immediately; PII anonymised; financial records retained 7 years per tax law; hard-delete other data after 30 days |
-| Right to restrict processing | Supported via consent toggles in settings |
-| Right to object | Marketing opt-out; support handles other objections case-by-case |
-| Right to data portability | Same data export endpoint; format is structured JSON |
+| Right                        | Implementation                                                                                                                                     |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Right to be informed         | Privacy Notice + just-in-time disclosures at point of data collection                                                                              |
+| Right of access              | `POST /users/me/data-export` — JSON export delivered within 24 hours via signed URL (72h TTL)                                                      |
+| Right to rectification       | User can edit profile fields directly; for fields they can't edit (e.g., DOB after verification), support ticket                                   |
+| Right to erasure             | `DELETE /users/me` — soft-delete immediately; PII anonymised; financial records retained 7 years per tax law; hard-delete other data after 30 days |
+| Right to restrict processing | Supported via consent toggles in settings                                                                                                          |
+| Right to object              | Marketing opt-out; support handles other objections case-by-case                                                                                   |
+| Right to data portability    | Same data export endpoint; format is structured JSON                                                                                               |
 
 ### Data residency
 
@@ -229,25 +229,28 @@ UAE has restrictions on lotteries and prize promotions:
 ## Internal controls
 
 ### Compliance team
+
 A designated compliance owner (Finance / Operations Lead) maintains the compliance calendar, sub-processor register, ROPA, DPIAs, and incident log.
 
 ### Compliance calendar
-| Activity | Cadence |
-|---|---|
-| Privacy Notice review | Annually + on material change |
-| Sub-processor register review | Quarterly |
-| ROPA review | Annually |
-| DPIA review for processing | On change |
-| VAT return | Monthly / quarterly per FTA |
-| PCI SAQ-A self-assessment | Annually |
-| Pen test | Annually |
-| Security awareness training | Quarterly |
-| Phishing simulation | Annually |
-| Disaster recovery drill | Quarterly |
-| Backup restore test | Monthly |
-| Access review | Quarterly (every employee's access reviewed) |
+
+| Activity                      | Cadence                                      |
+| ----------------------------- | -------------------------------------------- |
+| Privacy Notice review         | Annually + on material change                |
+| Sub-processor register review | Quarterly                                    |
+| ROPA review                   | Annually                                     |
+| DPIA review for processing    | On change                                    |
+| VAT return                    | Monthly / quarterly per FTA                  |
+| PCI SAQ-A self-assessment     | Annually                                     |
+| Pen test                      | Annually                                     |
+| Security awareness training   | Quarterly                                    |
+| Phishing simulation           | Annually                                     |
+| Disaster recovery drill       | Quarterly                                    |
+| Backup restore test           | Monthly                                      |
+| Access review                 | Quarterly (every employee's access reviewed) |
 
 ### Document repository
+
 All compliance evidence in `/compliance/` (separate private repo with restricted access).
 
 ---

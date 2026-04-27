@@ -9,6 +9,7 @@ How Volu's code is organised across repositories.
 ## Repository topology
 
 We use **multiple repositories**, not a single mega-monorepo. Two reasons:
+
 - Mobile (Flutter) and backend (TypeScript) have very different toolchains; mixing them adds friction.
 - Boundary discipline: contracts via OpenAPI + generated clients beat shared types in a monorepo.
 
@@ -131,6 +132,7 @@ volu-mobile/
 ```
 
 Melos commands:
+
 - `melos bootstrap` — link
 - `melos run analyze`, `test`, `format-check`, `gen:api`
 - `melos run build:user:android`, `build:user:ios`, `build:merchant:android`, `build:merchant:ios`
@@ -192,17 +194,17 @@ ADR format: short, dated, with context + decision + consequences.
 
 ## CI/CD per repo
 
-| Repo | Trigger | What |
-|---|---|---|
-| `volu-backend` | PR | Lint, type, test, build, scan |
-| `volu-backend` | merge `main` | Stage → prod deploy |
-| `volu-admin` | PR | Lint, type, test, build |
-| `volu-admin` | merge `main` | Vercel auto-deploy |
-| `volu-mobile` | PR | Lint, analyze, test, build smoke |
-| `volu-mobile` | tag | Mobile release pipeline |
-| `volu-infra` | PR | Terraform plan; cost diff |
-| `volu-infra` | merge `main` | Apply (with manual gate for prod) |
-| `volu-docs` | PR | Markdown lint + link check |
+| Repo           | Trigger      | What                              |
+| -------------- | ------------ | --------------------------------- |
+| `volu-backend` | PR           | Lint, type, test, build, scan     |
+| `volu-backend` | merge `main` | Stage → prod deploy               |
+| `volu-admin`   | PR           | Lint, type, test, build           |
+| `volu-admin`   | merge `main` | Vercel auto-deploy                |
+| `volu-mobile`  | PR           | Lint, analyze, test, build smoke  |
+| `volu-mobile`  | tag          | Mobile release pipeline           |
+| `volu-infra`   | PR           | Terraform plan; cost diff         |
+| `volu-infra`   | merge `main` | Apply (with manual gate for prod) |
+| `volu-docs`    | PR           | Markdown lint + link check        |
 
 ---
 

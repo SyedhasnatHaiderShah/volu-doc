@@ -39,6 +39,7 @@ We avoid rotations smaller than 6 because that pushes individuals to once-a-mont
 ### Joining the rotation
 
 New engineers don't go on-call until:
+
 1. Three months tenure.
 2. Shadow at least 2 weeks of someone else's rotation.
 3. Demonstrated competence: led at least 2 incident reviews; can deploy + rollback unaided.
@@ -62,14 +63,15 @@ The week after joining, they shadow the experienced on-call as the secondary, wi
 
 ## Response SLAs
 
-| Severity | Acknowledgement | Engagement | Resolution target |
-|---|---|---|---|
-| SEV-1 | 5 min | Active triage immediately | 1 hour |
-| SEV-2 | 15 min | Active triage within 30 min | 4 hours |
-| SEV-3 | Next business hour | Same business day | Within sprint |
-| SEV-4 | Next business day | When time permits | Backlog-prioritised |
+| Severity | Acknowledgement    | Engagement                  | Resolution target   |
+| -------- | ------------------ | --------------------------- | ------------------- |
+| SEV-1    | 5 min              | Active triage immediately   | 1 hour              |
+| SEV-2    | 15 min             | Active triage within 30 min | 4 hours             |
+| SEV-3    | Next business hour | Same business day           | Within sprint       |
+| SEV-4    | Next business day  | When time permits           | Backlog-prioritised |
 
 **Failure to acknowledge** within the SLA escalates automatically:
+
 - SEV-1: Primary not ack in 5 min → Secondary paged; not ack in 10 min → Manager paged.
 - SEV-2: Primary not ack in 15 min → Secondary paged; not ack in 30 min → Manager paged.
 
@@ -130,6 +132,7 @@ On-call is paid work, separate from regular salary.
 Every on-call shift earns a flat **standby allowance** for being available, regardless of pages received.
 
 Approximate scale (calibrated locally; adjust to market):
+
 - Primary, weekly shift: AED [X] flat.
 - Secondary, weekly shift: 50% of primary.
 - Manager, monthly shift: AED [Y] flat.
@@ -137,12 +140,14 @@ Approximate scale (calibrated locally; adjust to market):
 ### Active-incident compensation
 
 For time spent actively responding to a SEV-1 or SEV-2 outside business hours:
+
 - Time-and-a-half hourly rate, billed in 30-minute increments.
 - Minimum 1-hour billing per page (so a 5-minute page that resolves quickly still earns a full hour).
 
 ### Time off after major incidents
 
 After a SEV-1 incident that consumed > 4 hours of out-of-hours response:
+
 - The engineer takes the next business day off (paid).
 - Encouraged to skip the rest of the on-call week if needed; a teammate covers.
 
@@ -196,6 +201,7 @@ If a person did something genuinely wrong (skipped a required check, ignored an 
 ### Monthly fire drill
 
 Once a month, a chaos-engineering exercise:
+
 - Schedule announced 24h ahead.
 - Pick a scenario from a list (kill a service, induce DB lag, fail a webhook).
 - Run it during business hours in staging.
@@ -205,6 +211,7 @@ Once a month, a chaos-engineering exercise:
 ### Quarterly game day
 
 Full-day exercise:
+
 - Multiple cascading failures injected.
 - Runs in production-replica environment.
 - Whole engineering team participates.
@@ -215,6 +222,7 @@ Full-day exercise:
 ## Post-mortem ownership
 
 For every SEV-1 and SEV-2:
+
 - The Incident Commander owns the post-mortem (or designates an owner).
 - Draft within 5 business days.
 - Published to the team within 10 business days.
@@ -229,13 +237,13 @@ For SEV-3, post-mortem is optional but encouraged when there's a meaningful lear
 
 Reviewed monthly:
 
-| Metric | Target |
-|---|---|
-| Pages per primary shift | ≤ 3 (median); ≤ 5 (P90) |
-| Out-of-hours pages per shift | ≤ 1 |
-| Time spent actively responding (hours per shift) | ≤ 4 |
-| % of pages resolved without escalation | ≥ 60% |
-| Engineer satisfaction with on-call | Survey > 4/5 |
+| Metric                                           | Target                  |
+| ------------------------------------------------ | ----------------------- |
+| Pages per primary shift                          | ≤ 3 (median); ≤ 5 (P90) |
+| Out-of-hours pages per shift                     | ≤ 1                     |
+| Time spent actively responding (hours per shift) | ≤ 4                     |
+| % of pages resolved without escalation           | ≥ 60%                   |
+| Engineer satisfaction with on-call               | Survey > 4/5            |
 
 If these trend negatively for 2 months, we treat it as a problem to solve — not a culture to accept. Likely fixes: tune noisy alerts, add automation, expand the rotation pool.
 

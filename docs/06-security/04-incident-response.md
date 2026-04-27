@@ -8,12 +8,12 @@ How Volu handles security and operational incidents — from detection through p
 
 ## Severity ladder
 
-| Sev | Definition | Examples |
-|---|---|---|
-| **SEV-1** | Critical: customer data breach, payment system down, > 30% of users affected | Data leak, full outage, payment processor unreachable |
-| **SEV-2** | High: degraded service, security incident with limited blast radius | API errors > 5%, single region down, suspected unauthorised access |
-| **SEV-3** | Medium: feature broken, single merchant affected | Search returning stale data, one merchant's deals missing |
-| **SEV-4** | Low: cosmetic, non-urgent | Typo in copy, broken icon |
+| Sev       | Definition                                                                   | Examples                                                           |
+| --------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| **SEV-1** | Critical: customer data breach, payment system down, > 30% of users affected | Data leak, full outage, payment processor unreachable              |
+| **SEV-2** | High: degraded service, security incident with limited blast radius          | API errors > 5%, single region down, suspected unauthorised access |
+| **SEV-3** | Medium: feature broken, single merchant affected                             | Search returning stale data, one merchant's deals missing          |
+| **SEV-4** | Low: cosmetic, non-urgent                                                    | Typo in copy, broken icon                                          |
 
 ---
 
@@ -47,6 +47,7 @@ Sources of detection:
 - Internal observation.
 
 Anyone who notices a potential incident:
+
 1. Posts in `#alerts` Slack channel.
 2. Pages the on-call engineer.
 
@@ -59,6 +60,7 @@ On-call engineer assesses within 10 minutes:
 - Is there immediate danger to customers or data?
 
 Decision:
+
 - **Real incident** → declare; spin up `#incident-active`.
 - **False alarm** → log; tune the alert.
 
@@ -77,16 +79,19 @@ For SEV-1 and SEV-2, the priority order is:
 ### 4. Communicate
 
 #### Internal (every 30 min during active SEV-1/2):
+
 - Current status (investigating / identified / mitigating / monitoring / resolved)
 - Impact summary
 - Next update ETA
 
 #### External:
+
 - **SEV-1 customer impact:** status page banner + push notification to affected users (if needed).
 - **SEV-2:** status page note.
 - **SEV-3/4:** no public communication.
 
 #### Regulatory (data breach):
+
 - **Within 72 hours of confirmed personal-data breach:** notify UAE Data Office (or relevant authority).
 - **Without undue delay if high risk:** notify affected users.
 
@@ -115,37 +120,46 @@ Template:
 **Status:** Draft / Reviewed / Approved
 
 ## Summary
+
 [2-3 sentence executive summary.]
 
 ## Impact
+
 - Users affected: [number / %]
 - Revenue impact: [AED estimate]
 - Data impact: [yes/no — describe]
 
 ## Timeline (UAE time)
+
 - HH:MM — [event]
 - HH:MM — [event]
 - ...
 
 ## Root cause
+
 [Detailed technical explanation.]
 
 ## Detection
+
 [How did we detect? Could we have detected sooner?]
 
 ## Resolution
+
 [What did we do?]
 
 ## What went well
+
 - ...
 
 ## What went poorly
+
 - ...
 
 ## Action items
+
 | Action | Owner | Due | Status |
-|---|---|---|---|
-| ... | ... | ... | ... |
+| ------ | ----- | --- | ------ |
+| ...    | ...   | ... | ...    |
 ```
 
 Post-mortems are **blameless**: focus on systems and processes, not individuals.
@@ -226,6 +240,7 @@ Post-mortems are **blameless**: focus on systems and processes, not individuals.
 - **Pager:** PagerDuty or OpsGenie.
 
 Response time SLAs:
+
 - SEV-1: ack within 5 min.
 - SEV-2: ack within 15 min.
 - SEV-3: next business day.
